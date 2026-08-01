@@ -1,23 +1,42 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="Match MVP Backend", version="1.0")
+from backend.app.api.v1.router import api_router
+from backend.app.core.config import get_settings
 
-class UserProfileCreate(BaseModel):
-    name: str
-    role: str # "BUSINESS" or "PUBLISHER"
-    city: str
-    category: str
+
+settings = get_settings()
+
+
+app = FastAPI(
+    title=settings.app_name,
+    version="0.1.0",
+    debug=settings.debug,
+)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+app.include_router(
+    api_router,
+    prefix=settings.api_v1_prefix,
+)
+
 
 @app.get("/")
-def read_root():
-    return {"message": "Match MVP Python Backend is running!"}
+def read_root() -> dict[str, str]:
+    """
+    Basic root endpoint for confirming that the API is running.
+    """
 
-@app.post("/api/profiles")
-def create_profile(profile: UserProfileCreate):
-    # اینجا در آینده داده‌ها در دیتابیس ذخیره می‌شوند
     return {
-        "status": "success",
-        "message": f"Profile for {profile.name} created successfully with role {profile.role}!",
-        "data": profile
+        "message": "Match MVP Python Backend is running!",
+        "documentation": "/docs",
     }
