@@ -8,7 +8,15 @@ node_modules/
 dist/
 web-build/
 expo-env.d.ts
+# Python backend
+backend/venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
 
+# Environment secrets
+.env
+backend/.env
 # Native
 .kotlin/
 *.orig.*
