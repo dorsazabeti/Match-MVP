@@ -21,7 +21,23 @@ def get_user_by_email(
         .first()
     )
 
+def get_user_by_id(
+    db: Session,
+    user_id: str,
+) -> User | None:
+    """
+    Find a user by ID.
 
+    Returns:
+        User object if found
+        None if no user exists
+    """
+
+    return (
+        db.query(User)
+        .filter(User.id == user_id)
+        .first()
+    )
 def create_user(
     db: Session,
     email: str,
