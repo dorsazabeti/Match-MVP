@@ -47,3 +47,4 @@ def register_user(
         password_hash,
     )
 
+    return user
