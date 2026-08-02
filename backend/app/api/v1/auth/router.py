@@ -52,10 +52,6 @@ def register(
     request: RegisterRequest,
     db: Session = Depends(get_db),
 ):
-    """
-    Register a new user.
-    """
-
     try:
         user = register_user(
             db=db,
@@ -67,6 +63,7 @@ def register(
             id=str(user.id),
             email=user.email,
             status=user.status,
+            role=user.role,
         )
 
     except UserAlreadyExists as error:
@@ -84,9 +81,6 @@ def login(
     request: LoginRequest,
     db: Session = Depends(get_db),
 ):
-    """
-    Authenticate user and return JWT token.
-    """
 
     try:
         user = get_user_by_email(
@@ -126,12 +120,10 @@ def login(
 def get_me(
     current_user: User = Depends(get_current_user),
 ):
-    """
-    Return currently authenticated user.
-    """
 
     return UserResponse(
         id=str(current_user.id),
         email=current_user.email,
         status=current_user.status,
+        role=current_user.role,
     )

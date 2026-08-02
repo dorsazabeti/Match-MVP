@@ -12,7 +12,7 @@ class User(Base):
     """
     Authenticated user account.
 
-    This is the shared account behind both business and publisher roles.
+    Role is selected by the user during onboarding.
     """
 
     __tablename__ = "users"
@@ -39,6 +39,11 @@ class User(Base):
         String(20),
         default="ACTIVE",
         nullable=False,
+    )
+
+    role: Mapped[str | None] = mapped_column(
+        String(20),
+        nullable=True,
     )
 
     created_at: Mapped[datetime] = mapped_column(

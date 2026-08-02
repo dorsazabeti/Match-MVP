@@ -10,59 +10,39 @@ import {
 import { router } from "expo-router";
 
 import { theme } from "../../src/theme";
-import { loginUser, getCurrentUser } from "../../src/services/auth";
 import { useAuthStore } from "../../src/store/auth";
-export default function LoginScreen() {
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+import { createBusinessProfile } from "../../src/services/profiles";
 
 
-  const setToken = useAuthStore(
-    (state) => state.setToken
+export default function BusinessProfileScreen() {
+
+  const token = useAuthStore(
+    (state) => state.token
   );
 
-  const setUser = useAuthStore(
-    (state) => state.setUser
-  );
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState("");
+  const [city, setCity] = useState("");
+  const [description, setDescription] = useState("");
 
 
-  async function handleLogin() {
+  async function handleSubmit() {
 
-    const response = await loginUser(
-      email,
-      password
+    if (!token) {
+      return;
+    }
+
+    await createBusinessProfile(
+      token,
+      {
+        name,
+        category,
+        city,
+        description,
+      }
     );
 
-
-    setToken(response.access_token);
-
-
-    const user = await getCurrentUser(
-      response.access_token
-    );
-
-
-    setUser(user);
-
-
-    if (!user.role) {
-      router.push("/role");
-      return;
-    }
-
-
-    if (user.role === "BUSINESS") {
-      router.push("/business");
-      return;
-    }
-
-
-    if (user.role === "PUBLISHER") {
-      router.push("/publisher");
-      return;
-    }
-
+    router.replace("/");
   }
 
 
@@ -70,35 +50,48 @@ export default function LoginScreen() {
     <View style={styles.container}>
 
       <Text style={styles.title}>
-        ورود به حساب کاربری
+        اطلاعات کسب‌وکار
       </Text>
 
 
       <TextInput
         style={styles.input}
-        placeholder="ایمیل خود را وارد کنید"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
+        placeholder="نام کسب‌وکار"
+        value={name}
+        onChangeText={setName}
       />
 
 
       <TextInput
         style={styles.input}
-        placeholder="رمز عبور"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
+        placeholder="دسته‌بندی"
+        value={category}
+        onChangeText={setCategory}
+      />
+
+
+      <TextInput
+        style={styles.input}
+        placeholder="شهر"
+        value={city}
+        onChangeText={setCity}
+      />
+
+
+      <TextInput
+        style={styles.input}
+        placeholder="توضیحات"
+        value={description}
+        onChangeText={setDescription}
       />
 
 
       <TouchableOpacity
         style={styles.button}
-        onPress={handleLogin}
+        onPress={handleSubmit}
       >
         <Text style={styles.buttonText}>
-          ورود
+          ثبت اطلاعات
         </Text>
       </TouchableOpacity>
 
@@ -117,14 +110,12 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
   },
 
-
   title: {
     ...theme.typography.h1,
     textAlign: "center",
     marginBottom: theme.spacing.xl,
     color: theme.colors.text,
   },
-
 
   input: {
     backgroundColor: theme.colors.surface,
@@ -135,7 +126,6 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.border,
   },
 
-
   button: {
     backgroundColor: theme.colors.primary,
     padding: theme.spacing.m,
@@ -143,10 +133,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-
   buttonText: {
     color: theme.colors.surface,
     fontWeight: "bold",
   },
 
 });
+
