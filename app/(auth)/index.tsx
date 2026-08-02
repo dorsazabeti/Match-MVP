@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
   View,
   Text,
   TextInput,
@@ -16,6 +17,8 @@ export default function LoginScreen() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
 
   const setToken = useAuthStore(
@@ -29,40 +32,55 @@ export default function LoginScreen() {
 
   async function handleLogin() {
 
-    const response = await loginUser(
-      email,
-      password
-    );
+    const trimmedEmail = email.trim();
 
-
-    setToken(response.access_token);
-
-
-    const user = await getCurrentUser(
-      response.access_token
-    );
-
-
-    setUser(user);
-
-
-    if (!user.role) {
-      router.push("/role");
+    if (!trimmedEmail || !password) {
+      setError("ایمیل و رمز عبور را وارد کنید.");
       return;
     }
 
+    try {
+      setError(null);
+      setIsSubmitting(true);
 
-    if (user.role === "BUSINESS") {
-      router.push("/business");
-      return;
+      const response = await loginUser(
+        trimmedEmail,
+        password
+      );
+
+      setToken(response.access_token);
+
+      const user = await getCurrentUser(
+        response.access_token
+      );
+
+      setUser(user);
+
+      if (!user.role) {
+        router.replace("/role");
+        return;
+      }
+
+      if (user.role === "BUSINESS") {
+        router.replace("/business");
+        return;
+      }
+
+      if (user.role === "PUBLISHER") {
+        router.replace("/publisher");
+        return;
+      }
+
+      setError("نقش حساب کاربری معتبر نیست.");
+    } catch (loginError) {
+      setError(
+        loginError instanceof Error
+          ? loginError.message
+          : "ورود انجام نشد. دوباره تلاش کنید."
+      );
+    } finally {
+      setIsSubmitting(false);
     }
-
-
-    if (user.role === "PUBLISHER") {
-      router.push("/publisher");
-      return;
-    }
-
   }
 
 
@@ -81,6 +99,7 @@ export default function LoginScreen() {
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
+        editable={!isSubmitting}
       />
 
 
@@ -90,16 +109,28 @@ export default function LoginScreen() {
         value={password}
         onChangeText={setPassword}
         secureTextEntry
+        editable={!isSubmitting}
       />
 
+      {error ? (
+        <Text style={styles.errorText}>{error}</Text>
+      ) : null}
 
       <TouchableOpacity
-        style={styles.button}
+        style={[
+          styles.button,
+          isSubmitting && styles.buttonDisabled,
+        ]}
         onPress={handleLogin}
+        disabled={isSubmitting}
       >
-        <Text style={styles.buttonText}>
-          ورود
-        </Text>
+        {isSubmitting ? (
+          <ActivityIndicator color={theme.colors.surface} />
+        ) : (
+          <Text style={styles.buttonText}>
+            ورود
+          </Text>
+        )}
       </TouchableOpacity>
 
 
@@ -133,14 +164,27 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.m,
     borderWidth: 1,
     borderColor: theme.colors.border,
+    minHeight: theme.layout.minTouchTarget,
   },
 
+  errorText: {
+    ...theme.typography.caption,
+    color: theme.colors.error,
+    marginBottom: theme.spacing.m,
+    textAlign: "center",
+  },
 
   button: {
     backgroundColor: theme.colors.primary,
     padding: theme.spacing.m,
     borderRadius: theme.layout.borderRadius,
     alignItems: "center",
+    justifyContent: "center",
+    minHeight: theme.layout.minTouchTarget,
+  },
+
+  buttonDisabled: {
+    opacity: 0.6,
   },
 
 

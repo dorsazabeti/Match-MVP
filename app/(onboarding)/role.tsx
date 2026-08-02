@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
+  ActivityIndicator,
   View,
   Text,
   TouchableOpacity,
@@ -19,6 +20,16 @@ export default function RoleScreen() {
   const token = useAuthStore(
     (state) => state.token
   );
+  const user = useAuthStore(
+    (state) => state.user
+  );
+  const setUser = useAuthStore(
+    (state) => state.setUser
+  );
+  const [selectedRole, setSelectedRole] = useState<
+    "BUSINESS" | "PUBLISHER" | null
+  >(null);
+  const [error, setError] = useState<string | null>(null);
 
 
   async function handleRoleSelect(
@@ -26,24 +37,41 @@ export default function RoleScreen() {
   ) {
 
     if (!token) {
+      setError("نشست شما منقضی شده است. دوباره وارد شوید.");
       return;
     }
 
+    try {
+      setError(null);
+      setSelectedRole(role);
 
-    await selectRole(
-      token,
-      role
-    );
+      await selectRole(
+        token,
+        role
+      );
 
+      if (user) {
+        setUser({
+          ...user,
+          role,
+        });
+      }
 
-    if (role === "BUSINESS") {
-      router.push("/business");
-      return;
+      if (role === "BUSINESS") {
+        router.replace("/business");
+        return;
+      }
+
+      router.replace("/publisher");
+    } catch (selectionError) {
+      setError(
+        selectionError instanceof Error
+          ? selectionError.message
+          : "انتخاب نقش انجام نشد. دوباره تلاش کنید."
+      );
+    } finally {
+      setSelectedRole(null);
     }
-
-
-    router.push("/publisher");
-
   }
 
 
@@ -56,28 +84,47 @@ export default function RoleScreen() {
 
 
       <TouchableOpacity
-        style={styles.button}
+        style={[
+          styles.button,
+          selectedRole !== null && styles.buttonDisabled,
+        ]}
         onPress={() =>
           handleRoleSelect("BUSINESS")
         }
+        disabled={selectedRole !== null}
       >
-        <Text style={styles.buttonText}>
-          کسب‌وکار هستم
-        </Text>
+        {selectedRole === "BUSINESS" ? (
+          <ActivityIndicator color={theme.colors.surface} />
+        ) : (
+          <Text style={styles.buttonText}>
+            کسب‌وکار هستم
+          </Text>
+        )}
       </TouchableOpacity>
 
 
       <TouchableOpacity
-        style={styles.button}
+        style={[
+          styles.button,
+          selectedRole !== null && styles.buttonDisabled,
+        ]}
         onPress={() =>
           handleRoleSelect("PUBLISHER")
         }
+        disabled={selectedRole !== null}
       >
-        <Text style={styles.buttonText}>
-          ناشر هستم
-        </Text>
+        {selectedRole === "PUBLISHER" ? (
+          <ActivityIndicator color={theme.colors.surface} />
+        ) : (
+          <Text style={styles.buttonText}>
+            ناشر هستم
+          </Text>
+        )}
       </TouchableOpacity>
 
+      {error ? (
+        <Text style={styles.errorText}>{error}</Text>
+      ) : null}
 
     </View>
   );
@@ -108,6 +155,18 @@ const styles = StyleSheet.create({
     borderRadius: theme.layout.borderRadius,
     marginBottom: theme.spacing.m,
     alignItems: "center",
+    justifyContent: "center",
+    minHeight: theme.layout.minTouchTarget,
+  },
+
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+
+  errorText: {
+    ...theme.typography.caption,
+    color: theme.colors.error,
+    textAlign: "center",
   },
 
 
