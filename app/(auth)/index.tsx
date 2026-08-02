@@ -86,54 +86,67 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.glowTop} />
+      <View style={styles.glowBottom} />
 
-      <Text style={styles.title}>
-        ورود به حساب کاربری
-      </Text>
+      <View style={styles.card}>
+        <Text style={styles.brand}>MATCH</Text>
 
+        <Text style={styles.title}>
+          ورود به Match
+        </Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="ایمیل خود را وارد کنید"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        editable={!isSubmitting}
-      />
+        <Text style={styles.subtitle}>
+          برای شروع همکاری تبلیغاتی وارد حساب خود شوید
+        </Text>
 
 
-      <TextInput
-        style={styles.input}
-        placeholder="رمز عبور"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        editable={!isSubmitting}
-      />
-
-      {error ? (
-        <Text style={styles.errorText}>{error}</Text>
-      ) : null}
-
-      <TouchableOpacity
-        style={[
-          styles.button,
-          isSubmitting && styles.buttonDisabled,
-        ]}
-        onPress={handleLogin}
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? (
-          <ActivityIndicator color={theme.colors.surface} />
-        ) : (
-          <Text style={styles.buttonText}>
-            ورود
-          </Text>
-        )}
-      </TouchableOpacity>
+        <Text style={styles.label}>ایمیل</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="ایمیل خود را وارد کنید"
+          placeholderTextColor={theme.colors.textSecondary}
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          editable={!isSubmitting}
+        />
 
 
+        <Text style={styles.label}>رمز عبور</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="رمز عبور"
+          placeholderTextColor={theme.colors.textSecondary}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          editable={!isSubmitting}
+        />
+
+        {error ? (
+          <Text style={styles.errorText}>{error}</Text>
+        ) : null}
+
+        <TouchableOpacity
+          style={[
+            styles.button,
+            isSubmitting && styles.buttonDisabled,
+          ]}
+          onPress={handleLogin}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <ActivityIndicator color={theme.colors.surface} />
+          ) : (
+            <Text style={styles.buttonText}>
+              ورود
+            </Text>
+          )}
+        </TouchableOpacity>
+
+      </View>
     </View>
   );
 }
@@ -146,16 +159,70 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: theme.spacing.l,
     backgroundColor: theme.colors.background,
+    overflow: "hidden",
   },
 
+  glowTop: {
+    position: "absolute",
+    width: 280,
+    height: 280,
+    borderRadius: 140,
+    top: -150,
+    right: -90,
+    backgroundColor: theme.colors.primarySoft,
+  },
+
+  glowBottom: {
+    position: "absolute",
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    bottom: -130,
+    left: -80,
+    backgroundColor: "#F4E8FC",
+  },
+
+  card: {
+    width: "100%",
+    maxWidth: 440,
+    alignSelf: "center",
+    padding: theme.spacing.l,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: theme.layout.cardRadius,
+    backgroundColor: theme.colors.surface,
+  },
+
+  brand: {
+    color: theme.colors.primary,
+    fontSize: 14,
+    fontWeight: "800",
+    letterSpacing: 4,
+    textAlign: "center",
+    marginBottom: theme.spacing.m,
+  },
 
   title: {
     ...theme.typography.h1,
     textAlign: "center",
-    marginBottom: theme.spacing.xl,
+    marginBottom: theme.spacing.s,
     color: theme.colors.text,
   },
 
+  subtitle: {
+    ...theme.typography.caption,
+    color: theme.colors.textSecondary,
+    textAlign: "center",
+    marginBottom: theme.spacing.xl,
+  },
+
+  label: {
+    ...theme.typography.caption,
+    color: theme.colors.text,
+    textAlign: "right",
+    marginBottom: theme.spacing.s,
+    fontWeight: "600",
+  },
 
   input: {
     backgroundColor: theme.colors.surface,
@@ -165,6 +232,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.border,
     minHeight: theme.layout.minTouchTarget,
+    color: theme.colors.text,
+    textAlign: "right",
+    writingDirection: "rtl",
   },
 
   errorText: {

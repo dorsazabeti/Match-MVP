@@ -77,55 +77,62 @@ export default function RoleScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.card}>
+        <Text style={styles.step}>مرحله ۱ از ۲</Text>
 
-      <Text style={styles.title}>
-        چطور می‌خواهید از Match استفاده کنید؟
-      </Text>
+        <Text style={styles.title}>
+          چطور می‌خواهید از Match استفاده کنید؟
+        </Text>
 
-
-      <TouchableOpacity
-        style={[
-          styles.button,
-          selectedRole !== null && styles.buttonDisabled,
-        ]}
-        onPress={() =>
-          handleRoleSelect("BUSINESS")
-        }
-        disabled={selectedRole !== null}
-      >
-        {selectedRole === "BUSINESS" ? (
-          <ActivityIndicator color={theme.colors.surface} />
-        ) : (
-          <Text style={styles.buttonText}>
-            کسب‌وکار هستم
-          </Text>
-        )}
-      </TouchableOpacity>
+        <Text style={styles.subtitle}>
+          تجربه شما بر اساس نقشی که انتخاب می‌کنید شخصی‌سازی می‌شود
+        </Text>
 
 
-      <TouchableOpacity
-        style={[
-          styles.button,
-          selectedRole !== null && styles.buttonDisabled,
-        ]}
-        onPress={() =>
-          handleRoleSelect("PUBLISHER")
-        }
-        disabled={selectedRole !== null}
-      >
-        {selectedRole === "PUBLISHER" ? (
-          <ActivityIndicator color={theme.colors.surface} />
-        ) : (
-          <Text style={styles.buttonText}>
-            ناشر هستم
-          </Text>
-        )}
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            selectedRole !== null && styles.buttonDisabled,
+          ]}
+          onPress={() =>
+            handleRoleSelect("BUSINESS")
+          }
+          disabled={selectedRole !== null}
+        >
+          {selectedRole === "BUSINESS" ? (
+            <ActivityIndicator color={theme.colors.surface} />
+          ) : (
+            <Text style={styles.buttonText}>
+              کسب‌وکار هستم
+            </Text>
+          )}
+        </TouchableOpacity>
 
-      {error ? (
-        <Text style={styles.errorText}>{error}</Text>
-      ) : null}
 
+        <TouchableOpacity
+          style={[
+            styles.secondaryButton,
+            selectedRole !== null && styles.buttonDisabled,
+          ]}
+          onPress={() =>
+            handleRoleSelect("PUBLISHER")
+          }
+          disabled={selectedRole !== null}
+        >
+          {selectedRole === "PUBLISHER" ? (
+            <ActivityIndicator color={theme.colors.primary} />
+          ) : (
+            <Text style={styles.secondaryButtonText}>
+              ناشر هستم
+            </Text>
+          )}
+        </TouchableOpacity>
+
+        {error ? (
+          <Text style={styles.errorText}>{error}</Text>
+        ) : null}
+
+      </View>
     </View>
   );
 }
@@ -140,20 +147,56 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
   },
 
+  card: {
+    width: "100%",
+    maxWidth: 440,
+    alignSelf: "center",
+    padding: theme.spacing.l,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: theme.layout.cardRadius,
+    backgroundColor: theme.colors.surface,
+  },
+
+  step: {
+    ...theme.typography.caption,
+    color: theme.colors.primary,
+    textAlign: "center",
+    fontWeight: "700",
+    marginBottom: theme.spacing.m,
+  },
 
   title: {
     ...theme.typography.h1,
     textAlign: "center",
-    marginBottom: theme.spacing.xl,
+    marginBottom: theme.spacing.s,
     color: theme.colors.text,
   },
 
+  subtitle: {
+    ...theme.typography.caption,
+    color: theme.colors.textSecondary,
+    textAlign: "center",
+    marginBottom: theme.spacing.xl,
+  },
 
   button: {
     backgroundColor: theme.colors.primary,
     padding: theme.spacing.m,
     borderRadius: theme.layout.borderRadius,
     marginBottom: theme.spacing.m,
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: theme.layout.minTouchTarget,
+  },
+
+  secondaryButton: {
+    backgroundColor: theme.colors.surface,
+    padding: theme.spacing.m,
+    borderRadius: theme.layout.borderRadius,
+    marginBottom: theme.spacing.m,
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
     alignItems: "center",
     justifyContent: "center",
     minHeight: theme.layout.minTouchTarget,
@@ -172,6 +215,11 @@ const styles = StyleSheet.create({
 
   buttonText: {
     color: theme.colors.surface,
+    fontWeight: "bold",
+  },
+
+  secondaryButtonText: {
+    color: theme.colors.primary,
     fontWeight: "bold",
   },
 

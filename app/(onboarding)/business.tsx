@@ -73,10 +73,13 @@ export default function BusinessProfileScreen() {
   if (isCreated) {
     return (
       <View style={styles.successContainer}>
-        <Text style={styles.title}>پروفایل کسب‌وکار ساخته شد</Text>
-        <Text style={styles.successText}>
-          اطلاعات شما با موفقیت ثبت شد. مرحله بعدی ساخت پیشنهاد همکاری است.
-        </Text>
+        <View style={styles.card}>
+          <Text style={styles.successBadge}>✓</Text>
+          <Text style={styles.title}>پروفایل کسب‌وکار ساخته شد</Text>
+          <Text style={styles.successText}>
+            اطلاعات شما با موفقیت ثبت شد. مرحله بعدی ساخت پیشنهاد همکاری است.
+          </Text>
+        </View>
       </View>
     );
   }
@@ -86,65 +89,80 @@ export default function BusinessProfileScreen() {
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="handled"
     >
+      <View style={styles.card}>
+        <Text style={styles.step}>مرحله ۲ از ۲</Text>
 
-      <Text style={styles.title}>
-        اطلاعات کسب‌وکار
-      </Text>
+        <Text style={styles.title}>
+          اطلاعات کسب‌وکار
+        </Text>
 
-
-      <TextInput
-        style={styles.input}
-        placeholder="نام کسب‌وکار"
-        value={name}
-        onChangeText={setName}
-      />
+        <Text style={styles.subtitle}>
+          چند اطلاعات کوتاه برای ساخت پروفایل برند شما
+        </Text>
 
 
-      <TextInput
-        style={styles.input}
-        placeholder="دسته‌بندی"
-        value={category}
-        onChangeText={setCategory}
-      />
+        <Text style={styles.label}>نام کسب‌وکار</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="مثال: فروشگاه Match"
+          placeholderTextColor={theme.colors.textSecondary}
+          value={name}
+          onChangeText={setName}
+        />
 
 
-      <TextInput
-        style={styles.input}
-        placeholder="شهر"
-        value={city}
-        onChangeText={setCity}
-      />
+        <Text style={styles.label}>دسته‌بندی</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="مثال: فناوری"
+          placeholderTextColor={theme.colors.textSecondary}
+          value={category}
+          onChangeText={setCategory}
+        />
 
 
-      <TextInput
-        style={styles.input}
-        placeholder="توضیحات"
-        value={description}
-        onChangeText={setDescription}
-        multiline
-      />
+        <Text style={styles.label}>شهر</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="مثال: تهران"
+          placeholderTextColor={theme.colors.textSecondary}
+          value={city}
+          onChangeText={setCity}
+        />
 
-      {error ? (
-        <Text style={styles.errorText}>{error}</Text>
-      ) : null}
 
-      <TouchableOpacity
-        style={[
-          styles.button,
-          isSubmitting && styles.buttonDisabled,
-        ]}
-        onPress={handleSubmit}
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? (
-          <ActivityIndicator color={theme.colors.surface} />
-        ) : (
-          <Text style={styles.buttonText}>
-            ثبت اطلاعات
-          </Text>
-        )}
-      </TouchableOpacity>
+        <Text style={styles.label}>توضیحات کوتاه</Text>
+        <TextInput
+          style={[styles.input, styles.multilineInput]}
+          placeholder="کسب‌وکار خود را کوتاه معرفی کنید"
+          placeholderTextColor={theme.colors.textSecondary}
+          value={description}
+          onChangeText={setDescription}
+          multiline
+        />
 
+        {error ? (
+          <Text style={styles.errorText}>{error}</Text>
+        ) : null}
+
+        <TouchableOpacity
+          style={[
+            styles.button,
+            isSubmitting && styles.buttonDisabled,
+          ]}
+          onPress={handleSubmit}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <ActivityIndicator color={theme.colors.surface} />
+          ) : (
+            <Text style={styles.buttonText}>
+              ساخت پروفایل کسب‌وکار
+            </Text>
+          )}
+        </TouchableOpacity>
+
+      </View>
     </ScrollView>
   );
 }
@@ -172,11 +190,59 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
+  card: {
+    width: "100%",
+    maxWidth: 520,
+    alignSelf: "center",
+    padding: theme.spacing.l,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: theme.layout.cardRadius,
+    backgroundColor: theme.colors.surface,
+  },
+
+  step: {
+    ...theme.typography.caption,
+    color: theme.colors.primary,
+    textAlign: "center",
+    fontWeight: "700",
+    marginBottom: theme.spacing.m,
+  },
+
+  successBadge: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignSelf: "center",
+    backgroundColor: theme.colors.primarySoft,
+    color: theme.colors.primary,
+    fontSize: 28,
+    fontWeight: "bold",
+    lineHeight: 52,
+    textAlign: "center",
+    marginBottom: theme.spacing.l,
+  },
+
   title: {
     ...theme.typography.h1,
     textAlign: "center",
-    marginBottom: theme.spacing.xl,
+    marginBottom: theme.spacing.s,
     color: theme.colors.text,
+  },
+
+  subtitle: {
+    ...theme.typography.caption,
+    color: theme.colors.textSecondary,
+    textAlign: "center",
+    marginBottom: theme.spacing.xl,
+  },
+
+  label: {
+    ...theme.typography.caption,
+    color: theme.colors.text,
+    textAlign: "right",
+    marginBottom: theme.spacing.s,
+    fontWeight: "600",
   },
 
   input: {
@@ -187,6 +253,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.border,
     minHeight: theme.layout.minTouchTarget,
+    color: theme.colors.text,
+    textAlign: "right",
+    writingDirection: "rtl",
+  },
+
+  multilineInput: {
+    minHeight: 96,
+    textAlignVertical: "top",
   },
 
   errorText: {

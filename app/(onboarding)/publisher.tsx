@@ -114,10 +114,13 @@ export default function PublisherProfileScreen() {
   if (isCreated) {
     return (
       <View style={styles.successContainer}>
-        <Text style={styles.title}>پروفایل ناشر ساخته شد</Text>
-        <Text style={styles.successText}>
-          اطلاعات شما با موفقیت ثبت شد. مرحله بعدی تکمیل حساب‌های پلتفرم و تعرفه‌ها است.
-        </Text>
+        <View style={styles.card}>
+          <Text style={styles.successBadge}>✓</Text>
+          <Text style={styles.title}>پروفایل ناشر ساخته شد</Text>
+          <Text style={styles.successText}>
+            اطلاعات شما با موفقیت ثبت شد. مرحله بعدی تکمیل حساب‌های پلتفرم و تعرفه‌ها است.
+          </Text>
+        </View>
       </View>
     );
   }
@@ -128,75 +131,95 @@ export default function PublisherProfileScreen() {
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="handled"
     >
-      <Text style={styles.title}>
-        اطلاعات ناشر
-      </Text>
+      <View style={styles.card}>
+        <Text style={styles.step}>مرحله ۲ از ۲</Text>
 
-      <TextInput
-        style={[styles.input, styles.multilineInput]}
-        placeholder="درباره خودتان بنویسید"
-        value={bio}
-        onChangeText={setBio}
-        multiline
-      />
+        <Text style={styles.title}>
+          اطلاعات ناشر
+        </Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="شهر"
-        value={city}
-        onChangeText={setCity}
-      />
+        <Text style={styles.subtitle}>
+          برای دریافت پیشنهادهای مرتبط، پروفایل رسانه‌ای خود را کامل کنید
+        </Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="پلتفرم‌ها؛ مثال: Instagram, Telegram"
-        value={platforms}
-        onChangeText={setPlatforms}
-        autoCapitalize="none"
-      />
+        <Text style={styles.label}>درباره شما</Text>
+        <TextInput
+          style={[styles.input, styles.multilineInput]}
+          placeholder="درباره خودتان بنویسید"
+          placeholderTextColor={theme.colors.textSecondary}
+          value={bio}
+          onChangeText={setBio}
+          multiline
+        />
 
-      <TextInput
-        style={styles.input}
-        placeholder="تعداد دنبال‌کنندگان"
-        value={followersCount}
-        onChangeText={setFollowersCount}
-        keyboardType="number-pad"
-      />
+        <Text style={styles.label}>شهر</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="مثال: تهران"
+          placeholderTextColor={theme.colors.textSecondary}
+          value={city}
+          onChangeText={setCity}
+        />
 
-      <TextInput
-        style={styles.input}
-        placeholder="توانایی‌ها؛ مثال: Review, Tutorial"
-        value={contentCapabilities}
-        onChangeText={setContentCapabilities}
-      />
+        <Text style={styles.label}>پلتفرم‌ها</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="مثال: Instagram, Telegram"
+          placeholderTextColor={theme.colors.textSecondary}
+          value={platforms}
+          onChangeText={setPlatforms}
+          autoCapitalize="none"
+        />
 
-      <TextInput
-        style={styles.input}
-        placeholder="حداقل سه علاقه؛ مثال: Travel, Food, Tech"
-        value={personalInterests}
-        onChangeText={setPersonalInterests}
-      />
+        <Text style={styles.label}>تعداد دنبال‌کنندگان</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="مثال: 12500"
+          placeholderTextColor={theme.colors.textSecondary}
+          value={followersCount}
+          onChangeText={setFollowersCount}
+          keyboardType="number-pad"
+        />
 
-      {error ? (
-        <Text style={styles.errorText}>{error}</Text>
-      ) : null}
+        <Text style={styles.label}>توانایی‌های تولید محتوا</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="مثال: Review, Tutorial"
+          placeholderTextColor={theme.colors.textSecondary}
+          value={contentCapabilities}
+          onChangeText={setContentCapabilities}
+        />
 
-      <TouchableOpacity
-        style={[
-          styles.button,
-          isSubmitting && styles.buttonDisabled,
-        ]}
-        onPress={handleSubmit}
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? (
-          <ActivityIndicator color={theme.colors.surface} />
-        ) : (
-          <Text style={styles.buttonText}>
-            ثبت اطلاعات
-          </Text>
-        )}
-      </TouchableOpacity>
+        <Text style={styles.label}>علاقه‌مندی‌های شخصی</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="حداقل سه مورد؛ مثال: Travel, Food, Tech"
+          placeholderTextColor={theme.colors.textSecondary}
+          value={personalInterests}
+          onChangeText={setPersonalInterests}
+        />
+
+        {error ? (
+          <Text style={styles.errorText}>{error}</Text>
+        ) : null}
+
+        <TouchableOpacity
+          style={[
+            styles.button,
+            isSubmitting && styles.buttonDisabled,
+          ]}
+          onPress={handleSubmit}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <ActivityIndicator color={theme.colors.surface} />
+          ) : (
+            <Text style={styles.buttonText}>
+              ساخت پروفایل ناشر
+            </Text>
+          )}
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }
@@ -218,9 +241,49 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
   },
 
+  card: {
+    width: "100%",
+    maxWidth: 520,
+    alignSelf: "center",
+    padding: theme.spacing.l,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: theme.layout.cardRadius,
+    backgroundColor: theme.colors.surface,
+  },
+
+  step: {
+    ...theme.typography.caption,
+    color: theme.colors.primary,
+    textAlign: "center",
+    fontWeight: "700",
+    marginBottom: theme.spacing.m,
+  },
+
+  successBadge: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignSelf: "center",
+    backgroundColor: theme.colors.primarySoft,
+    color: theme.colors.primary,
+    fontSize: 28,
+    fontWeight: "bold",
+    lineHeight: 52,
+    textAlign: "center",
+    marginBottom: theme.spacing.l,
+  },
+
   title: {
     ...theme.typography.h1,
     color: theme.colors.text,
+    textAlign: "center",
+    marginBottom: theme.spacing.s,
+  },
+
+  subtitle: {
+    ...theme.typography.caption,
+    color: theme.colors.textSecondary,
     textAlign: "center",
     marginBottom: theme.spacing.xl,
   },
@@ -231,6 +294,14 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
+  label: {
+    ...theme.typography.caption,
+    color: theme.colors.text,
+    textAlign: "right",
+    marginBottom: theme.spacing.s,
+    fontWeight: "600",
+  },
+
   input: {
     minHeight: theme.layout.minTouchTarget,
     padding: theme.spacing.m,
@@ -239,6 +310,9 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.border,
     borderRadius: theme.layout.borderRadius,
     backgroundColor: theme.colors.surface,
+    color: theme.colors.text,
+    textAlign: "right",
+    writingDirection: "rtl",
   },
 
   multilineInput: {

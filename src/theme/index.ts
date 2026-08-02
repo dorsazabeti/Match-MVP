@@ -1,12 +1,14 @@
 export const colors = {
-  primary: '#0066FF',
-  background: '#F8F9FA',
+  primary: '#6657F5',
+  primarySoft: '#EFEDFF',
+  accent: '#A95BEA',
+  background: '#F7F6FC',
   surface: '#FFFFFF',
-  text: '#11181C',
-  textSecondary: '#687076',
-  border: '#E6E8EB',
-  error: '#E5484D',
-  success: '#30A46C',
+  text: '#29263A',
+  textSecondary: '#777286',
+  border: '#DDD9EA',
+  error: '#D94B64',
+  success: '#18865F',
 };
 
 export const spacing = {
@@ -19,16 +21,17 @@ export const spacing = {
 };
 
 export const typography = {
-  h1: { fontSize: 24, fontWeight: 'bold' as const },
+  h1: { fontSize: 28, fontWeight: 'bold' as const },
   h2: { fontSize: 20, fontWeight: 'bold' as const },
-  body: { fontSize: 16, fontWeight: 'normal' as const },
+  body: { fontSize: 16, lineHeight: 26, fontWeight: 'normal' as const },
   caption: { fontSize: 14, color: colors.textSecondary },
 };
 
 export const layout = {
   // PRD requirement: Minimum 44x44 touch targets
-  minTouchTarget: 44, 
-  borderRadius: 8,
+  minTouchTarget: 48,
+  borderRadius: 12,
+  cardRadius: 20,
 };
 
 export const theme = {
