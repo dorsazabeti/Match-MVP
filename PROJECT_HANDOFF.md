@@ -8,7 +8,7 @@
 **Repository:** `/Users/dorsazabeti/match-mvp`  
 **Branch:** `main`  
 **PRD اصلی:** `/Users/dorsazabeti/Downloads/Match MVP Product Requirements Document.pdf`  
-**وضعیت کلی:** Day 1 و Day 2 تکمیل شده‌اند؛ بهبود ثبت‌نام و session پیاده‌سازی و stage شده اما هنوز commit نشده؛ Day 3 هنوز شروع نشده است.
+**وضعیت کلی:** Day 1 و Day 2 و بهبود ثبت‌نام/session تکمیل، commit و push شده‌اند؛ رفع timeout شبکهٔ گوشی پیاده‌سازی شده ولی هنوز commit نشده؛ Day 3 هنوز شروع نشده است.
 
 ---
 
@@ -30,7 +30,7 @@ npx tsc --noEmit
 
 ### اقدام بعدی دقیق
 
-1. تغییرات stage‌شدهٔ ثبت‌نام/session را مرور و به‌عنوان checkpoint commit کن.
+1. رفع timeout شبکه و همین فایل را مرور و به‌عنوان checkpoint commit کن.
 2. سپس Day 3 را با migration جداول نرمال‌شدهٔ Publisher آغاز کن.
 3. migration SQL را قبل از اجرا بررسی کن.
 4. backend، TypeScript، API واقعی و UI را تست کن.
@@ -121,49 +121,38 @@ Offer
 
 ## 5. وضعیت Git در زمان آخرین به‌روزرسانی
 
-Branch محلی `main` پنج commit از `origin/main` جلوتر است.
+Branch محلی `main` در آخرین بررسی با `origin/main` همگام بود.
 
 ### commitهای موجود
 
 ```text
+6fcba30 Complete authentication persistence and registration flow
 69eb7f4 style Day 2 onboarding preview
 3fc4e9a fix Expo Go API address
 678ce4b harden onboarding transitions
 ef9e447 add publisher onboarding flow
 71fdb34 fix Day 2 onboarding routing
-ff3c38c has some bugs                  # origin/main
+ff3c38c has some bugs
 ```
 
-### هشدار: تغییرات stage‌شده اما commit‌نشده
+### تغییرات فعلی commit‌نشده
 
-در آخرین بررسی، این فایل‌ها stage شده بودند:
+در آخرین بررسی، فقط این تغییرات مربوط به رفع timeout و مستندسازی commit نشده بودند:
 
 ```text
-M  app.json
-M  app/(auth)/index.tsx
-A  app/(auth)/register.tsx
-M  app/_layout.tsx
-M  backend/app/api/v1/auth/router.py
-M  backend/app/models/user.py
-M  backend/app/repositories/user_repository.py
-M  backend/app/schemas/auth.py
-M  backend/app/services/user_service.py
-A  backend/migrations/versions/a6c9d3f2b817_add_user_display_name.py
-M  package-lock.json
-M  package.json
-M  src/services/auth.ts
-A  src/services/session.ts
-M  src/store/auth.ts
+M  PROJECT_HANDOFF.md
+M  src/services/api.ts
+?? .env.example
 ```
 
-این تغییرات مربوط به registration، `display_name` و session persistence هستند. آن‌ها را پاک یا بازنویسی نکن؛ ابتدا diff آن‌ها را بررسی و checkpoint کن:
+تغییرات registration، `display_name` و session persistence در commit `6fcba30` ثبت و روی `origin/main` push شده‌اند. تغییرات فعلی را پیش از checkpoint مرور کن:
 
 ```bash
 git diff --cached --stat
 git diff --cached
 ```
 
-خود این فایل ممکن است پس از ایجاد هنوز untracked باشد؛ پیش از commit وضعیت Git دوباره بررسی شود.
+پیش از commit وضعیت Git دوباره بررسی شود، چون ممکن است صاحب پروژه هم‌زمان commit یا push انجام داده باشد.
 
 ---
 
@@ -198,7 +187,7 @@ git diff --cached
 - [x] production iOS bundle
 - [x] web preview
 
-### بهبود بین Day 2 و Day 3 — پیاده‌سازی شده، stage شده، commit نشده
+### بهبود بین Day 2 و Day 3 — انجام، commit و push شده
 
 - [x] صفحهٔ Register با نام نمایشی، ایمیل، رمز و تکرار رمز
 - [x] ثبت‌نام و login خودکار بعد از موفقیت
@@ -213,7 +202,7 @@ git diff --cached
 - [x] اعتبارسنجی password بین 8 و 72 کاراکتر در registration
 - [x] normalize کردن email و display name
 - [x] تست واقعی register → login → me با دیتابیس
-- [ ] commit checkpoint این بخش
+- [x] commit و push این بخش با `6fcba30`
 
 ### Day 3 — Publisher Profile Normalization & Complete Onboarding — انجام نشده
 
@@ -263,13 +252,13 @@ resume logic هنوز هوشمند نیست. اگر کاربر قبلاً profil
 
 ## 8. APIهای فعلی
 
-Base URL فعلی frontend:
+Base URL پیش‌فرض فعلی frontend:
 
 ```text
-http://192.168.1.5:8000/api/v1
+http://10.215.160.133:8000/api/v1
 ```
 
-این IP به شبکهٔ Wi-Fi وابسته است و ممکن است تغییر کند. در ادامه باید به `EXPO_PUBLIC_API_URL` منتقل شود، اما تا زمانی که تغییر ضروری نیست flow سالم را نشکن.
+این IP به شبکهٔ Wi-Fi وابسته است و ممکن است تغییر کند. `src/services/api.ts` ابتدا مقدار `EXPO_PUBLIC_API_URL` را می‌خواند و در نبود آن از IP بالا استفاده می‌کند. الگوی تنظیم در `.env.example` قرار دارد. بعد از تغییر `.env` باید Metro دوباره اجرا شود.
 
 ### Authentication
 
@@ -651,7 +640,8 @@ JSONهای Day 2 فعلاً برای backward compatibility حفظ شوند؛ د
 - [ ] ثبت‌نام phone OTP طبق PRD
 - [ ] حداقل یک social login طبق PRD
 - [ ] resume routing برای profile موجود
-- [ ] انتقال Base URL به `EXPO_PUBLIC_API_URL`
+- [x] امکان تنظیم Base URL با `EXPO_PUBLIC_API_URL`
+- [ ] حذف fallback وابسته به LAN پس از مشخص شدن محیط deployment
 - [ ] اتصال health router
 - [ ] تست خودکار backend با pytest
 - [ ] تست خودکار frontend
@@ -774,4 +764,5 @@ checkpoint. The immediate next task is stated in section 1 of the handoff file.
 - registration/session stage‌شده ولی commit‌نشده مشخص شد.
 - migration اعمال‌شدهٔ `display_name` ثبت شد.
 - برنامهٔ دقیق Day 3، توضیح فایل‌ها، APIها، ریسک‌ها و دستورات اجرا اضافه شد.
-
+- timeout ثبت‌نام روی گوشی ریشه‌یابی شد: frontend از IP قدیمی `192.168.1.5` استفاده می‌کرد، در حالی که IP مک `10.215.160.133` بود.
+- Base URL پیش‌فرض اصلاح و پشتیبانی از `EXPO_PUBLIC_API_URL` اضافه شد.
