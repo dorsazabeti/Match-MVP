@@ -1,60 +1,61 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
-  View,
+  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
+  View,
 } from "react-native";
-
 import { router } from "expo-router";
 
-import { theme } from "../../src/theme";
-import { loginUser, getCurrentUser } from "../../src/services/auth";
+import {
+  getCurrentUser,
+  loginUser,
+  registerUser,
+} from "../../src/services/auth";
 import { useAuthStore } from "../../src/store/auth";
-export default function LoginScreen() {
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+import { theme } from "../../src/theme";
 
 
-  const token = useAuthStore(
-    (state) => state.token
-  );
-  const user = useAuthStore(
-    (state) => state.user
-  );
+export default function RegisterScreen() {
   const setSession = useAuthStore(
     (state) => state.setSession
   );
 
-  useEffect(() => {
-    if (!token || !user) {
+  const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+
+  async function handleRegister() {
+    const normalizedName = displayName
+      .trim()
+      .split(/\s+/)
+      .join(" ");
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (normalizedName.length < 2) {
+      setError("نام و نام خانوادگی را وارد کنید.");
       return;
     }
 
-    if (!user.role) {
-      router.replace("/role");
+    if (!normalizedEmail.includes("@")) {
+      setError("یک ایمیل معتبر وارد کنید.");
       return;
     }
 
-    router.replace(
-      user.role === "BUSINESS"
-        ? "/business"
-        : "/publisher"
-    );
-  }, [token, user]);
+    if (password.length < 8) {
+      setError("رمز عبور باید حداقل ۸ کاراکتر باشد.");
+      return;
+    }
 
-
-  async function handleLogin() {
-
-    const trimmedEmail = email.trim();
-
-    if (!trimmedEmail || !password) {
-      setError("ایمیل و رمز عبور را وارد کنید.");
+    if (password !== confirmPassword) {
+      setError("تکرار رمز عبور با رمز عبور یکسان نیست.");
       return;
     }
 
@@ -62,41 +63,31 @@ export default function LoginScreen() {
       setError(null);
       setIsSubmitting(true);
 
-      const response = await loginUser(
-        trimmedEmail,
+      await registerUser(
+        normalizedName,
+        normalizedEmail,
         password
       );
 
+      const loginResponse = await loginUser(
+        normalizedEmail,
+        password
+      );
       const user = await getCurrentUser(
-        response.access_token
+        loginResponse.access_token
       );
 
       await setSession(
-        response.access_token,
+        loginResponse.access_token,
         user
       );
 
-      if (!user.role) {
-        router.replace("/role");
-        return;
-      }
-
-      if (user.role === "BUSINESS") {
-        router.replace("/business");
-        return;
-      }
-
-      if (user.role === "PUBLISHER") {
-        router.replace("/publisher");
-        return;
-      }
-
-      setError("نقش حساب کاربری معتبر نیست.");
-    } catch (loginError) {
+      router.replace("/role");
+    } catch (registrationError) {
       setError(
-        loginError instanceof Error
-          ? loginError.message
-          : "ورود انجام نشد. دوباره تلاش کنید."
+        registrationError instanceof Error
+          ? registrationError.message
+          : "ثبت‌نام انجام نشد. دوباره تلاش کنید."
       );
     } finally {
       setIsSubmitting(false);
@@ -105,26 +96,31 @@ export default function LoginScreen() {
 
 
   return (
-    <View style={styles.container}>
-      <View style={styles.glowTop} />
-      <View style={styles.glowBottom} />
-
+    <ScrollView
+      contentContainerStyle={styles.container}
+      keyboardShouldPersistTaps="handled"
+    >
       <View style={styles.card}>
         <Text style={styles.brand}>MATCH</Text>
-
-        <Text style={styles.title}>
-          ورود به Match
-        </Text>
-
+        <Text style={styles.title}>ساخت حساب کاربری</Text>
         <Text style={styles.subtitle}>
-          برای شروع همکاری تبلیغاتی وارد حساب خود شوید
+          ابتدا حساب خود را بسازید؛ انتخاب نقش در مرحله بعد انجام می‌شود
         </Text>
 
+        <Text style={styles.label}>نام و نام خانوادگی</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="نام خود را وارد کنید"
+          placeholderTextColor={theme.colors.textSecondary}
+          value={displayName}
+          onChangeText={setDisplayName}
+          editable={!isSubmitting}
+        />
 
         <Text style={styles.label}>ایمیل</Text>
         <TextInput
           style={styles.input}
-          placeholder="ایمیل خود را وارد کنید"
+          placeholder="example@email.com"
           placeholderTextColor={theme.colors.textSecondary}
           value={email}
           onChangeText={setEmail}
@@ -133,14 +129,24 @@ export default function LoginScreen() {
           editable={!isSubmitting}
         />
 
-
         <Text style={styles.label}>رمز عبور</Text>
         <TextInput
           style={styles.input}
-          placeholder="رمز عبور"
+          placeholder="حداقل ۸ کاراکتر"
           placeholderTextColor={theme.colors.textSecondary}
           value={password}
           onChangeText={setPassword}
+          secureTextEntry
+          editable={!isSubmitting}
+        />
+
+        <Text style={styles.label}>تکرار رمز عبور</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="رمز عبور را دوباره وارد کنید"
+          placeholderTextColor={theme.colors.textSecondary}
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
           secureTextEntry
           editable={!isSubmitting}
         />
@@ -154,68 +160,39 @@ export default function LoginScreen() {
             styles.button,
             isSubmitting && styles.buttonDisabled,
           ]}
-          onPress={handleLogin}
+          onPress={handleRegister}
           disabled={isSubmitting}
         >
           {isSubmitting ? (
             <ActivityIndicator color={theme.colors.surface} />
           ) : (
             <Text style={styles.buttonText}>
-              ورود
+              ثبت‌نام و ادامه
             </Text>
           )}
         </TouchableOpacity>
 
-        <View style={styles.authSwitchRow}>
-          <Text style={styles.authSwitchText}>
-            هنوز حساب ندارید؟
+        <TouchableOpacity
+          onPress={() => router.back()}
+          accessibilityRole="link"
+        >
+          <Text style={styles.loginLink}>
+            حساب دارید؟ وارد شوید
           </Text>
-          <TouchableOpacity
-            onPress={() => router.push("/register")}
-            accessibilityRole="link"
-          >
-            <Text style={styles.authSwitchLink}>
-              ثبت‌نام در Match
-            </Text>
-          </TouchableOpacity>
-        </View>
-
+        </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 
 const styles = StyleSheet.create({
-
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: "center",
     padding: theme.spacing.l,
     backgroundColor: theme.colors.background,
-    overflow: "hidden",
   },
-
-  glowTop: {
-    position: "absolute",
-    width: 280,
-    height: 280,
-    borderRadius: 140,
-    top: -150,
-    right: -90,
-    backgroundColor: theme.colors.primarySoft,
-  },
-
-  glowBottom: {
-    position: "absolute",
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    bottom: -130,
-    left: -80,
-    backgroundColor: "#F4E8FC",
-  },
-
   card: {
     width: "100%",
     maxWidth: 440,
@@ -226,7 +203,6 @@ const styles = StyleSheet.create({
     borderRadius: theme.layout.cardRadius,
     backgroundColor: theme.colors.surface,
   },
-
   brand: {
     color: theme.colors.primary,
     fontSize: 14,
@@ -235,21 +211,18 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: theme.spacing.m,
   },
-
   title: {
     ...theme.typography.h1,
+    color: theme.colors.text,
     textAlign: "center",
     marginBottom: theme.spacing.s,
-    color: theme.colors.text,
   },
-
   subtitle: {
     ...theme.typography.caption,
     color: theme.colors.textSecondary,
     textAlign: "center",
     marginBottom: theme.spacing.xl,
   },
-
   label: {
     ...theme.typography.caption,
     color: theme.colors.text,
@@ -257,63 +230,45 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.s,
     fontWeight: "600",
   },
-
   input: {
-    backgroundColor: theme.colors.surface,
+    minHeight: theme.layout.minTouchTarget,
     padding: theme.spacing.m,
-    borderRadius: theme.layout.borderRadius,
     marginBottom: theme.spacing.m,
     borderWidth: 1,
     borderColor: theme.colors.border,
-    minHeight: theme.layout.minTouchTarget,
+    borderRadius: theme.layout.borderRadius,
+    backgroundColor: theme.colors.surface,
     color: theme.colors.text,
     textAlign: "right",
     writingDirection: "rtl",
   },
-
   errorText: {
     ...theme.typography.caption,
     color: theme.colors.error,
-    marginBottom: theme.spacing.m,
     textAlign: "center",
+    marginBottom: theme.spacing.m,
   },
-
   button: {
-    backgroundColor: theme.colors.primary,
+    minHeight: theme.layout.minTouchTarget,
+    justifyContent: "center",
+    alignItems: "center",
     padding: theme.spacing.m,
     borderRadius: theme.layout.borderRadius,
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: theme.layout.minTouchTarget,
+    backgroundColor: theme.colors.primary,
   },
-
   buttonDisabled: {
     opacity: 0.6,
   },
-
-
   buttonText: {
+    ...theme.typography.body,
     color: theme.colors.surface,
     fontWeight: "bold",
   },
-
-  authSwitchRow: {
-    flexDirection: "row-reverse",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: theme.spacing.s,
-    marginTop: theme.spacing.l,
-  },
-
-  authSwitchText: {
-    ...theme.typography.caption,
-    color: theme.colors.textSecondary,
-  },
-
-  authSwitchLink: {
+  loginLink: {
     ...theme.typography.caption,
     color: theme.colors.primary,
+    textAlign: "center",
     fontWeight: "700",
+    marginTop: theme.spacing.l,
   },
-
 });

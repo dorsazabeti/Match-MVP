@@ -2,12 +2,14 @@ import { apiRequest } from "./api";
 
 
 export async function registerUser(
+  displayName: string,
   email: string,
   password: string
 ) {
   return apiRequest("/auth/register", {
     method: "POST",
     body: JSON.stringify({
+      display_name: displayName,
       email,
       password,
     }),

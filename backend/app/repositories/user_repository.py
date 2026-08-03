@@ -40,6 +40,7 @@ def get_user_by_id(
     )
 def create_user(
     db: Session,
+    display_name: str,
     email: str,
     password_hash: str,
 ) -> User:
@@ -48,6 +49,7 @@ def create_user(
     """
 
     user = User(
+        display_name=display_name,
         email=email,
         password_hash=password_hash,
     )

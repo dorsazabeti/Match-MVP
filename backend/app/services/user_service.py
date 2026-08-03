@@ -14,6 +14,7 @@ from backend.app.repositories.user_repository import (
 
 def register_user(
     db: Session,
+    display_name: str,
     email: str,
     password: str,
 ):
@@ -27,9 +28,14 @@ def register_user(
     4. Return created user
     """
 
+    normalized_email = email.strip().lower()
+    normalized_display_name = " ".join(
+        display_name.split()
+    )
+
     existing_user = get_user_by_email(
         db,
-        email,
+        normalized_email,
     )
 
     if existing_user:
@@ -43,8 +49,9 @@ def register_user(
 
     user = create_user(
         db,
-        email,
-        password_hash,
+        display_name=normalized_display_name,
+        email=normalized_email,
+        password_hash=password_hash,
     )
 
     return user

@@ -55,12 +55,14 @@ def register(
     try:
         user = register_user(
             db=db,
+            display_name=request.display_name,
             email=request.email,
             password=request.password,
         )
 
         return RegisterResponse(
             id=str(user.id),
+            display_name=user.display_name,
             email=user.email,
             status=user.status,
             role=user.role,
@@ -85,7 +87,7 @@ def login(
     try:
         user = get_user_by_email(
             db,
-            request.email,
+            request.email.strip().lower(),
         )
 
         if not user:
@@ -123,6 +125,7 @@ def get_me(
 
     return UserResponse(
         id=str(current_user.id),
+        display_name=current_user.display_name,
         email=current_user.email,
         status=current_user.status,
         role=current_user.role,
