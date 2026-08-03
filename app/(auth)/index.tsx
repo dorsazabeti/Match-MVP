@@ -12,6 +12,10 @@ import { router } from "expo-router";
 
 import { theme } from "../../src/theme";
 import { loginUser, getCurrentUser } from "../../src/services/auth";
+import {
+  getPublisherOnboardingRoute,
+  getPublisherOnboardingStatus,
+} from "../../src/services/publisherOnboarding";
 import { useAuthStore } from "../../src/store/auth";
 export default function LoginScreen() {
 
@@ -32,21 +36,42 @@ export default function LoginScreen() {
   );
 
   useEffect(() => {
-    if (!token || !user) {
+    if (!token || !user || isSubmitting) {
       return;
     }
 
-    if (!user.role) {
+    routeAuthenticatedUser(token, user.role).catch((routingError) => {
+      setError(
+        routingError instanceof Error
+          ? routingError.message
+          : "مرحلهٔ بعدی حساب مشخص نشد. دوباره تلاش کنید."
+      );
+    });
+  }, [token, user, isSubmitting]);
+
+
+  async function routeAuthenticatedUser(
+    authToken: string,
+    role: string | null
+  ) {
+    if (!role) {
       router.replace("/role");
       return;
     }
 
-    router.replace(
-      user.role === "BUSINESS"
-        ? "/business"
-        : "/publisher"
-    );
-  }, [token, user]);
+    if (role === "BUSINESS") {
+      router.replace("/business");
+      return;
+    }
+
+    if (role === "PUBLISHER") {
+      const status = await getPublisherOnboardingStatus(authToken);
+      router.replace(getPublisherOnboardingRoute(status.next_step));
+      return;
+    }
+
+    throw new Error("نقش حساب کاربری معتبر نیست.");
+  }
 
 
   async function handleLogin() {
@@ -76,22 +101,10 @@ export default function LoginScreen() {
         user
       );
 
-      if (!user.role) {
-        router.replace("/role");
-        return;
-      }
-
-      if (user.role === "BUSINESS") {
-        router.replace("/business");
-        return;
-      }
-
-      if (user.role === "PUBLISHER") {
-        router.replace("/publisher");
-        return;
-      }
-
-      setError("نقش حساب کاربری معتبر نیست.");
+      await routeAuthenticatedUser(
+        response.access_token,
+        user.role
+      );
     } catch (loginError) {
       setError(
         loginError instanceof Error

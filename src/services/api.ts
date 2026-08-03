@@ -27,11 +27,18 @@ export async function apiRequest(
     );
   }
 
-  const data = await response.json();
+  if (response.status === 204) {
+    return null;
+  }
+
+  const responseBody = await response.text();
+  const data = responseBody
+    ? JSON.parse(responseBody)
+    : null;
 
   if (!response.ok) {
     throw new Error(
-      data.detail || "Something went wrong"
+      data?.detail || "Something went wrong"
     );
   }
 

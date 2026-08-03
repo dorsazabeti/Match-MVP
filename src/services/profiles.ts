@@ -26,8 +26,10 @@ export async function createBusinessProfile(
 export async function createPublisherProfile(
   token: string,
   data: {
-    bio?: string;
-    city?: string;
+    public_name: string;
+    bio: string;
+    city: string;
+    avatar_url?: string;
     platforms?: object;
     followers_count?: number;
     content_capabilities?: object;

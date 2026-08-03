@@ -78,7 +78,7 @@ export default function RoleScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Text style={styles.step}>مرحله ۱ از ۲</Text>
+        <Text style={styles.step}>انتخاب مسیر همکاری</Text>
 
         <Text style={styles.title}>
           چطور می‌خواهید از Match استفاده کنید؟
