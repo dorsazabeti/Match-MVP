@@ -1,7 +1,18 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, String, Text, ForeignKey, Integer, JSON, func
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    DateTime,
+    ForeignKey,
+    Integer,
+    JSON,
+    String,
+    Text,
+    func,
+    text,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -14,6 +25,12 @@ class PublisherProfile(Base):
     """
 
     __tablename__ = "publisher_profiles"
+    __table_args__ = (
+        CheckConstraint(
+            "status IN ('ACTIVE', 'BLOCKED')",
+            name="ck_publisher_profiles_status",
+        ),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -28,6 +45,11 @@ class PublisherProfile(Base):
         nullable=False,
     )
 
+    public_name: Mapped[str | None] = mapped_column(
+        String(120),
+        nullable=True,
+    )
+
     bio: Mapped[str | None] = mapped_column(
         Text,
         nullable=True,
@@ -36,6 +58,25 @@ class PublisherProfile(Base):
     city: Mapped[str | None] = mapped_column(
         String(100),
         nullable=True,
+    )
+
+    avatar_url: Mapped[str | None] = mapped_column(
+        String(500),
+        nullable=True,
+    )
+
+    discoverable: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+        server_default=text("false"),
+        nullable=False,
+    )
+
+    status: Mapped[str] = mapped_column(
+        String(20),
+        default="ACTIVE",
+        server_default="ACTIVE",
+        nullable=False,
     )
 
     platforms: Mapped[dict | None] = mapped_column(
