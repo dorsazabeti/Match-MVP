@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     database_url: str
     jwt_secret_key: str
     jwt_access_token_expire_minutes: int = 30
+    publisher_currency: str = "IRR"
     model_config = SettingsConfigDict(
         env_file="backend/.env",
         env_file_encoding="utf-8",
