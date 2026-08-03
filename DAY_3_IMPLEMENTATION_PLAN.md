@@ -6,6 +6,8 @@
 >
 > آخرین تطبیق با repository: 2026-08-03 — Asia/Tehran
 
+**وضعیت اجرا:** schema، API و wizard کامل شده‌اند. تست API و web flow پاس شده است. فقط smoke test روی Expo Go گوشی و push commitهای محلی باقی مانده است.
+
 ---
 
 ## 0. Prompt آماده برای GPT بعدی
@@ -349,16 +351,16 @@ add_publisher_onboarding_entities
 قبل از apply:
 
 ```bash
-python3 -m alembic -c backend/alembic.ini heads
-python3 -m alembic -c backend/alembic.ini current
-python3 -m alembic -c backend/alembic.ini upgrade head --sql
+python3 -m alembic -c alembic.ini heads
+python3 -m alembic -c alembic.ini current
+python3 -m alembic -c alembic.ini upgrade head --sql
 ```
 
 SQL تولیدی را کامل بررسی کن. سپس:
 
 ```bash
-python3 -m alembic -c backend/alembic.ini upgrade head
-python3 -m alembic -c backend/alembic.ini current
+python3 -m alembic -c alembic.ini upgrade head
+python3 -m alembic -c alembic.ini current
 ```
 
 حتماً modelهای جدید در `backend/app/models/__init__.py` import شوند. `backend/migrations/env.py` نیز باید تمام metadata مدل‌ها را load کند؛ import فعلی فقط `User` است و باید بدون تغییر معماری اصلاح شود.
@@ -773,7 +775,7 @@ Commit موجود:
 5a9277f some fixes
 ```
 
-### Checkpoint 1 — Models و Migration
+### Checkpoint 1 — Models و Migration — انجام شده
 
 1. modelها و relationshipها
 2. models init و Alembic metadata
@@ -782,13 +784,13 @@ Commit موجود:
 5. upgrade
 6. schema inspection
 
-Commit پیشنهادی:
+Commit موجود:
 
 ```text
-add normalized publisher onboarding schema
+f6f0e8c add normalized publisher onboarding schema
 ```
 
-### Checkpoint 2 — Backend API
+### Checkpoint 2 — Backend API — انجام شده
 
 1. schemas
 2. repository
@@ -797,13 +799,13 @@ add normalized publisher onboarding schema
 5. options/status endpoints
 6. HTTP integration tests
 
-Commit پیشنهادی:
+Commit موجود:
 
 ```text
-add publisher onboarding APIs and discoverability
+b7a5e62 add publisher onboarding APIs and discoverability
 ```
 
-### Checkpoint 3 — Frontend Wizard
+### Checkpoint 3 — Frontend Wizard — انجام شده
 
 1. typed services
 2. base profile screen
@@ -813,13 +815,13 @@ add publisher onboarding APIs and discoverability
 6. completion screen
 7. resume routing
 
-Commit پیشنهادی:
+Commit موجود:
 
 ```text
-build complete publisher onboarding wizard
+6c8b283 build complete publisher onboarding wizard
 ```
 
-### Checkpoint 4 — QA و Documentation
+### Checkpoint 4 — QA و Documentation — تقریباً کامل
 
 1. full new-user flow
 2. refresh/relogin resume
@@ -829,10 +831,15 @@ build complete publisher onboarding wizard
 6. mobile UI
 7. handoff update
 
-Commit پیشنهادی:
+وضعیت:
 
 ```text
-verify Day 3 publisher onboarding flow
+API smoke: PASS
+Web full flow: PASS
+Session/reload resume: PASS
+390px viewport overflow check: PASS
+iOS production bundle (990 modules): PASS
+Expo Go physical-device smoke: PENDING
 ```
 
 ---
@@ -844,8 +851,8 @@ verify Day 3 publisher onboarding flow
 ```bash
 npx tsc --noEmit
 python3 -m compileall backend/app
-python3 -m alembic -c backend/alembic.ini current
-python3 -m alembic -c backend/alembic.ini heads
+python3 -m alembic -c alembic.ini current
+python3 -m alembic -c alembic.ini heads
 ```
 
 اگر test infrastructure اضافه شد:
@@ -925,28 +932,28 @@ python3 -m pytest backend/tests -q
 
 ## 14. Acceptance Criteria نهایی Day 3
 
-- [ ] migration بررسی و روی PostgreSQL واقعی اعمال شده است.
-- [ ] JSON legacy حذف نشده و رکوردهای موجود خراب نشده‌اند.
-- [ ] Publisher base profile قابل create/edit است.
-- [ ] Platform Accounts add/edit/deactivate/list واقعی دارند.
-- [ ] Media Plans add/edit/deactivate/list واقعی دارند.
-- [ ] Interests از categoryهای backend انتخاب و ذخیره می‌شوند.
-- [ ] Capabilities typed و ذخیره می‌شوند.
-- [ ] تمام APIها authenticated و owner-scoped هستند.
-- [ ] discoverability فقط server-side محاسبه می‌شود.
-- [ ] حداقل شرایط PRD دقیقاً enforce می‌شوند.
-- [ ] onboarding status و resume routing کار می‌کنند.
-- [ ] refresh/relogin داده را حفظ می‌کند.
-- [ ] loading/error/empty states وجود دارند.
-- [ ] UI mobile-first، RTL و هم‌تم با صفحات فعلی است.
-- [ ] هیچ mock success یا local-only data وجود ندارد.
-- [ ] `npx tsc --noEmit` پاس است.
-- [ ] Python compile/tests پاس‌اند.
-- [ ] API happy path و negative cases تست شده‌اند.
-- [ ] flow کامل روی browser mobile width تست شده است.
+- [x] migration بررسی و روی PostgreSQL واقعی اعمال شده است.
+- [x] JSON legacy حذف نشده و رکوردهای موجود خراب نشده‌اند.
+- [x] Publisher base profile قابل create/edit است.
+- [x] Platform Accounts add/edit/deactivate/list واقعی دارند.
+- [x] Media Plans add/edit/deactivate/list واقعی دارند.
+- [x] Interests از categoryهای backend انتخاب و ذخیره می‌شوند.
+- [x] Capabilities typed و ذخیره می‌شوند.
+- [x] تمام APIها authenticated و owner-scoped هستند.
+- [x] discoverability فقط server-side محاسبه می‌شود.
+- [x] حداقل شرایط PRD دقیقاً enforce می‌شوند.
+- [x] onboarding status و resume routing کار می‌کنند.
+- [x] refresh/relogin داده را حفظ می‌کند.
+- [x] loading/error/empty states وجود دارند.
+- [x] UI mobile-first، RTL و هم‌تم با صفحات فعلی است.
+- [x] هیچ mock success یا local-only data وجود ندارد.
+- [x] `npx tsc --noEmit` پاس است.
+- [x] Python compile و smoke test پاس‌اند.
+- [x] API happy path و negative cases تست شده‌اند.
+- [x] flow کامل روی browser mobile width تست شده است.
 - [ ] در صورت دسترسی، flow روی Expo Go گوشی تست شده است.
-- [ ] `PROJECT_HANDOFF.md` به‌روز شده است.
-- [ ] checkpoint commitها ساخته شده‌اند.
+- [x] `PROJECT_HANDOFF.md` به‌روز شده است.
+- [x] checkpoint commitها ساخته شده‌اند.
 
 ---
 

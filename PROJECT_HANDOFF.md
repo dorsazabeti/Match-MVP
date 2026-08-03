@@ -8,7 +8,7 @@
 **Repository:** `/Users/dorsazabeti/match-mvp`  
 **Branch:** `main`  
 **PRD اصلی:** `/Users/dorsazabeti/Downloads/Match MVP Product Requirements Document.pdf`  
-**وضعیت کلی:** Day 1 و Day 2، ثبت‌نام/session و رفع timeout شبکهٔ گوشی تکمیل، commit و push شده‌اند؛ Day 3 هنوز شروع نشده است.
+**وضعیت کلی:** پیاده‌سازی Day 3 در دیتابیس، backend و frontend کامل و در سه checkpoint commit شده است. API و web flow کامل پاس شده‌اند؛ فقط smoke test نهایی روی Expo Go گوشی و push کردن چهار commit محلی باقی مانده است.
 
 ---
 
@@ -30,10 +30,10 @@ npx tsc --noEmit
 
 ### اقدام بعدی دقیق
 
-1. Day 3 را طبق `DAY_3_IMPLEMENTATION_PLAN.md` با مدل‌ها و migration جداول نرمال‌شدهٔ Publisher آغاز کن.
-2. migration SQL را قبل از اجرا بررسی کن.
-3. backend، TypeScript، API واقعی و UI را تست کن.
-4. پس از هر مرحلهٔ معنی‌دار، این فایل را به‌روزرسانی و commit checkpoint ایجاد کن.
+1. flow کامل Publisher را یک بار روی Expo Go گوشی واقعی smoke test کن.
+2. اگر تست گوشی پاس شد، Day 3 را نهایی علامت بزن و commit مستندات بساز.
+3. چهار commit محلی Day 3 را پس از تأیید به `origin/main` push کن.
+4. سپس Day 4 را از Offer schema و inventory fields آغاز کن.
 
 ---
 
@@ -120,11 +120,15 @@ Offer
 
 ## 5. وضعیت Git در زمان آخرین به‌روزرسانی
 
-Branch محلی `main` در آخرین بررسی با `origin/main` همگام بود.
+Branch محلی `main` در آخرین بررسی چهار commit از `origin/main` جلوتر بود.
 
 ### commitهای موجود
 
 ```text
+6c8b283 build complete publisher onboarding wizard
+b7a5e62 add publisher onboarding APIs and discoverability
+f6f0e8c add normalized publisher onboarding schema
+34ded6b document Day 3 implementation plan
 5a9277f some fixes
 6fcba30 Complete authentication persistence and registration flow
 69eb7f4 style Day 2 onboarding preview
@@ -137,14 +141,14 @@ ff3c38c has some bugs
 
 ### تغییرات فعلی commit‌نشده
 
-در آخرین بررسی، فقط اسناد برنامه‌ریزی Day 3 commit نشده بودند:
+در آخرین بررسی، کد Day 3 clean و commit شده بود؛ تغییر فعلی فقط به‌روزرسانی همین دو سند است:
 
 ```text
 M  PROJECT_HANDOFF.md
-?? DAY_3_IMPLEMENTATION_PLAN.md
+M  DAY_3_IMPLEMENTATION_PLAN.md
 ```
 
-تغییرات registration/session در commit `6fcba30` و رفع شبکه در commit `5a9277f` ثبت و روی `origin/main` push شده‌اند. تغییرات فعلی را پیش از checkpoint مرور کن:
+Day 3 در commitهای `f6f0e8c`، `b7a5e62` و `6c8b283` ثبت شده ولی هنوز push نشده است. تغییرات فعلی را پیش از checkpoint مرور کن:
 
 ```bash
 git diff --cached --stat
@@ -203,19 +207,26 @@ git diff --cached
 - [x] تست واقعی register → login → me با دیتابیس
 - [x] commit و push این بخش با `6fcba30`
 
-### Day 3 — Publisher Profile Normalization & Complete Onboarding — انجام نشده
+### Day 3 — Publisher Profile Normalization & Complete Onboarding — تقریباً کامل
 
-- [ ] طراحی و migration جداول نرمال‌شدهٔ publisher
-- [ ] Platform Accounts CRUD
-- [ ] Media Plans CRUD
-- [ ] Interests management
-- [ ] Capabilities management
-- [ ] onboarding status endpoint
-- [ ] محاسبهٔ server-side وضعیت discoverability
-- [ ] wizard کامل frontend برای Publisher
-- [ ] resume logic برای کاربر دارای profile
-- [ ] تست API، دیتابیس، iPhone و web
-- [ ] commitهای checkpoint
+- [x] طراحی و migration جداول نرمال‌شدهٔ publisher
+- [x] اعمال migration `c4d3e7f9a021` روی PostgreSQL واقعی
+- [x] Platform Accounts CRUD با soft delete
+- [x] Media Plans CRUD با `Numeric(14,2)` و soft delete
+- [x] Interests management با categoryهای seedشده
+- [x] Capabilities management
+- [x] onboarding options/status endpoints
+- [x] محاسبهٔ server-side وضعیت discoverability
+- [x] authorization و owner-scoping تمام منابع
+- [x] wizard کامل چهارمرحله‌ای frontend برای Publisher
+- [x] completion summary واقعی
+- [x] resume logic برای کاربر دارای profile
+- [x] تست واقعی API و PostgreSQL
+- [x] تست کامل web flow و reload/session resume
+- [x] TypeScript، Python compile و iOS production bundle
+- [x] commitهای checkpoint
+- [ ] smoke test نهایی روی Expo Go گوشی فیزیکی
+- [ ] push چهار commit محلی Day 3
 
 ---
 
@@ -288,9 +299,25 @@ PUBLISHER
 
 ```text
 POST /api/v1/profiles/business
-GET  /api/v1/profiles/business
+GET  /api/v1/profiles/business/me
 POST /api/v1/profiles/publisher
-GET  /api/v1/profiles/publisher
+GET  /api/v1/profiles/publisher/me
+PATCH /api/v1/profiles/publisher/me
+
+GET    /api/v1/profiles/publisher/onboarding-options
+GET    /api/v1/profiles/publisher/onboarding-status
+GET    /api/v1/profiles/publisher/platform-accounts
+POST   /api/v1/profiles/publisher/platform-accounts
+PATCH  /api/v1/profiles/publisher/platform-accounts/{account_id}
+DELETE /api/v1/profiles/publisher/platform-accounts/{account_id}
+GET    /api/v1/profiles/publisher/media-plans
+POST   /api/v1/profiles/publisher/media-plans
+PATCH  /api/v1/profiles/publisher/media-plans/{media_plan_id}
+DELETE /api/v1/profiles/publisher/media-plans/{media_plan_id}
+GET    /api/v1/profiles/publisher/interests
+PUT    /api/v1/profiles/publisher/interests
+GET    /api/v1/profiles/publisher/capabilities
+PUT    /api/v1/profiles/publisher/capabilities
 ```
 
 Publisher فعلی این موارد را در JSON نگه می‌دارد:
@@ -299,7 +326,7 @@ Publisher فعلی این موارد را در JSON نگه می‌دارد:
 - `content_capabilities`
 - `personal_interests`
 
-و `followers_count` نیز در profile فعلی ذخیره می‌شود. این ساختار legacy برای سازگاری موقت باقی بماند؛ Day 3 باید source of truth نرمال‌شده ایجاد کند.
+و `followers_count` نیز در profile legacy ذخیره می‌شود. این ستون‌ها برای backward compatibility باقی مانده‌اند؛ جداول نرمال‌شدهٔ Day 3 اکنون source of truth هستند.
 
 ---
 
@@ -311,21 +338,22 @@ Publisher فعلی این موارد را در JSON نگه می‌دارد:
 e1903711c333  add business and publisher profiles
 fedfa7107d8e  make user role nullable
 a6c9d3f2b817  add user display_name
+c4d3e7f9a021  add publisher onboarding entities
 ```
 
 آخرین وضعیت تأییدشدهٔ دیتابیس local:
 
 ```text
-a6c9d3f2b817 (head)
+c4d3e7f9a021 (head)
 ```
 
-یعنی migration مربوط به `display_name` روی دیتابیس اعمال شده است، حتی اگر کد آن هنوز commit نشده باشد.
+این revision روی PostgreSQL توسعه اعمال شده، ۱۲ category seed شده و `alembic check` هیچ schema driftی گزارش نکرده است.
 
 برای بررسی:
 
 ```bash
-python3 -m alembic -c backend/alembic.ini current
-python3 -m alembic -c backend/alembic.ini heads
+python3 -m alembic -c alembic.ini current
+python3 -m alembic -c alembic.ini heads
 ```
 
 قبل از هر migration جدید:
