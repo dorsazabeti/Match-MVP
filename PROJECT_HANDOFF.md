@@ -8,13 +8,13 @@
 **Repository:** `/Users/dorsazabeti/match-mvp`  
 **Branch:** `main`  
 **PRD اصلی:** `/Users/dorsazabeti/Downloads/Match MVP Product Requirements Document.pdf`  
-**وضعیت کلی:** Day 1 و Day 2 و بهبود ثبت‌نام/session تکمیل، commit و push شده‌اند؛ رفع timeout شبکهٔ گوشی پیاده‌سازی شده ولی هنوز commit نشده؛ Day 3 هنوز شروع نشده است.
+**وضعیت کلی:** Day 1 و Day 2، ثبت‌نام/session و رفع timeout شبکهٔ گوشی تکمیل، commit و push شده‌اند؛ Day 3 هنوز شروع نشده است.
 
 ---
 
 ## 1. دستور فوری برای چت یا توسعه‌دهندهٔ بعدی
 
-این پروژه را از نو نساز و معماری آن را بدون ضرورت تغییر نده. ابتدا این فایل، PRD و وضعیت واقعی Git را بخوان. سپس این دستورات read-only را اجرا کن:
+این پروژه را از نو نساز و معماری آن را بدون ضرورت تغییر نده. ابتدا این فایل، `DAY_3_IMPLEMENTATION_PLAN.md`، PRD و وضعیت واقعی Git را بخوان. سپس این دستورات read-only را اجرا کن:
 
 ```bash
 cd /Users/dorsazabeti/match-mvp
@@ -30,11 +30,10 @@ npx tsc --noEmit
 
 ### اقدام بعدی دقیق
 
-1. رفع timeout شبکه و همین فایل را مرور و به‌عنوان checkpoint commit کن.
-2. سپس Day 3 را با migration جداول نرمال‌شدهٔ Publisher آغاز کن.
-3. migration SQL را قبل از اجرا بررسی کن.
-4. backend، TypeScript، API واقعی و UI را تست کن.
-5. پس از هر مرحلهٔ معنی‌دار، این فایل را به‌روزرسانی و commit checkpoint ایجاد کن.
+1. Day 3 را طبق `DAY_3_IMPLEMENTATION_PLAN.md` با مدل‌ها و migration جداول نرمال‌شدهٔ Publisher آغاز کن.
+2. migration SQL را قبل از اجرا بررسی کن.
+3. backend، TypeScript، API واقعی و UI را تست کن.
+4. پس از هر مرحلهٔ معنی‌دار، این فایل را به‌روزرسانی و commit checkpoint ایجاد کن.
 
 ---
 
@@ -126,6 +125,7 @@ Branch محلی `main` در آخرین بررسی با `origin/main` همگام 
 ### commitهای موجود
 
 ```text
+5a9277f some fixes
 6fcba30 Complete authentication persistence and registration flow
 69eb7f4 style Day 2 onboarding preview
 3fc4e9a fix Expo Go API address
@@ -137,15 +137,14 @@ ff3c38c has some bugs
 
 ### تغییرات فعلی commit‌نشده
 
-در آخرین بررسی، فقط این تغییرات مربوط به رفع timeout و مستندسازی commit نشده بودند:
+در آخرین بررسی، فقط اسناد برنامه‌ریزی Day 3 commit نشده بودند:
 
 ```text
 M  PROJECT_HANDOFF.md
-M  src/services/api.ts
-?? .env.example
+?? DAY_3_IMPLEMENTATION_PLAN.md
 ```
 
-تغییرات registration، `display_name` و session persistence در commit `6fcba30` ثبت و روی `origin/main` push شده‌اند. تغییرات فعلی را پیش از checkpoint مرور کن:
+تغییرات registration/session در commit `6fcba30` و رفع شبکه در commit `5a9277f` ثبت و روی `origin/main` push شده‌اند. تغییرات فعلی را پیش از checkpoint مرور کن:
 
 ```bash
 git diff --cached --stat
@@ -766,3 +765,4 @@ checkpoint. The immediate next task is stated in section 1 of the handoff file.
 - برنامهٔ دقیق Day 3، توضیح فایل‌ها، APIها، ریسک‌ها و دستورات اجرا اضافه شد.
 - timeout ثبت‌نام روی گوشی ریشه‌یابی شد: frontend از IP قدیمی `192.168.1.5` استفاده می‌کرد، در حالی که IP مک `10.215.160.133` بود.
 - Base URL پیش‌فرض اصلاح و پشتیبانی از `EXPO_PUBLIC_API_URL` اضافه شد.
+- برنامهٔ اجرایی کامل و قابل تحویل Day 3 در `DAY_3_IMPLEMENTATION_PLAN.md` اضافه شد.
