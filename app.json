@@ -24,7 +24,14 @@
     },
     "plugins": [
       "expo-router",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "برای افزودن تصویر واقعی پیشنهاد، Match به گالری شما دسترسی نیاز دارد.",
+          "cameraPermission": false
+        }
+      ]
     ]
   }
 }

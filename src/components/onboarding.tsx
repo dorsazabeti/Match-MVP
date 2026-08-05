@@ -58,6 +58,33 @@ export function LoadingScreen({ label = "در حال بارگذاری..." }) {
 }
 
 
+export function ErrorScreen({
+  message,
+  onRetry,
+  onBack,
+}: {
+  message: string;
+  onRetry: () => void;
+  onBack?: () => void;
+}) {
+  return (
+    <View style={styles.loadingScreen}>
+      <View style={styles.errorIcon}>
+        <Text style={styles.errorIconText}>!</Text>
+      </View>
+      <Text style={styles.errorTitle}>بارگذاری انجام نشد</Text>
+      <Text style={styles.errorScreenMessage}>{message}</Text>
+      <View style={styles.errorActions}>
+        <PrimaryButton label="تلاش دوباره" onPress={onRetry} />
+        {onBack ? (
+          <SecondaryButton label="بازگشت" onPress={onBack} />
+        ) : null}
+      </View>
+    </View>
+  );
+}
+
+
 export function FormField({
   label,
   multiline,
@@ -299,6 +326,35 @@ const styles = StyleSheet.create({
   loadingLabel: {
     ...theme.typography.caption,
     color: theme.colors.textSecondary,
+  },
+  errorIcon: {
+    width: 56,
+    height: 56,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 28,
+    backgroundColor: theme.colors.errorSoft,
+  },
+  errorIconText: {
+    color: theme.colors.error,
+    fontSize: 28,
+    fontWeight: "900",
+  },
+  errorTitle: {
+    ...theme.typography.h2,
+    color: theme.colors.text,
+  },
+  errorScreenMessage: {
+    ...theme.typography.caption,
+    maxWidth: 420,
+    color: theme.colors.textSecondary,
+    textAlign: "center",
+  },
+  errorActions: {
+    width: "100%",
+    maxWidth: 320,
+    gap: theme.spacing.s,
+    marginTop: theme.spacing.s,
   },
   fieldGroup: {
     marginBottom: theme.spacing.m,

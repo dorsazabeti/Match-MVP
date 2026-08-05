@@ -6,6 +6,7 @@ from backend.app.api.v1.profiles.router import router as profiles_router
 from backend.app.api.v1.profiles.publisher_onboarding_router import (
     router as publisher_onboarding_router,
 )
+from backend.app.api.v1.offers.router import router as offers_router
 
 
 api_router = APIRouter()
@@ -25,4 +26,8 @@ api_router.include_router(
 
 api_router.include_router(
     publisher_onboarding_router
+)
+
+api_router.include_router(
+    offers_router
 )

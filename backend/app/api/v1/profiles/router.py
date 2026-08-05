@@ -79,6 +79,8 @@ def create_publisher(
             status_code=400,
             detail=str(error),
         )
+
+
 @router.get(
     "/business/me",
     response_model=BusinessProfileResponse,
@@ -95,7 +97,7 @@ def get_my_business_profile(
 
     except ValueError as error:
         raise HTTPException(
-            status_code=400,
+            status_code=404 if str(error) == "Business profile not found" else 400,
             detail=str(error),
         )
 

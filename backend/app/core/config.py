@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     jwt_secret_key: str
     jwt_access_token_expire_minutes: int = 30
     publisher_currency: str = "IRR"
+    upload_dir: str = "backend/uploads"
+    max_offer_image_bytes: int = 10 * 1024 * 1024
     model_config = SettingsConfigDict(
         env_file="backend/.env",
         env_file_encoding="utf-8",

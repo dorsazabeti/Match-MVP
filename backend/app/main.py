@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from backend.app.api.v1.router import api_router
 from backend.app.core.config import get_settings
+from backend.app.services.storage_service import get_upload_root
 
 
 settings = get_settings()
@@ -27,6 +29,12 @@ app.add_middleware(
 app.include_router(
     api_router,
     prefix=settings.api_v1_prefix,
+)
+
+app.mount(
+    "/uploads",
+    StaticFiles(directory=get_upload_root()),
+    name="uploads",
 )
 
 

@@ -4,11 +4,11 @@
 >
 > هدف فایل این است که اگر گفت‌وگوی فعلی به محدودیت رسید، بتوان کل آن را به یک گفت‌وگوی جدید داد و توسعه دقیقاً از همین نقطه ادامه پیدا کند.
 
-**آخرین به‌روزرسانی:** 2026-08-03 — Asia/Tehran  
+**آخرین به‌روزرسانی:** 2026-08-05 — Asia/Tehran
 **Repository:** `/Users/dorsazabeti/match-mvp`  
 **Branch:** `main`  
 **PRD اصلی:** `/Users/dorsazabeti/Downloads/Match MVP Product Requirements Document.pdf`  
-**وضعیت کلی:** پیاده‌سازی Day 3 در دیتابیس، backend و frontend کامل و در سه checkpoint commit شده است. API و web flow کامل پاس شده‌اند؛ فقط smoke test نهایی روی Expo Go گوشی و push کردن چهار commit محلی باقی مانده است.
+**وضعیت کلی:** Day 1 تا Day 3 کامل و روی `origin/main` هستند. Day 4 به‌صورت vertical slice واقعی پیاده‌سازی و در checkpoint `complete Day 4 Offer vertical slice` ثبت شده است: Offer schema و inventory، چهار reward type، image storage، owner-scoped API، dashboard و صفحه‌های create/list/detail/edit و lifecycle. migration و تست API/DB و mobile-width web پاس شده‌اند. فقط smoke test نهایی Day 4 روی Expo Go گوشی و push این checkpoint باقی مانده است.
 
 ---
 
@@ -30,10 +30,10 @@ npx tsc --noEmit
 
 ### اقدام بعدی دقیق
 
-1. flow کامل Publisher را یک بار روی Expo Go گوشی واقعی smoke test کن.
-2. اگر تست گوشی پاس شد، Day 3 را نهایی علامت بزن و commit مستندات بساز.
-3. چهار commit محلی Day 3 را پس از تأیید به `origin/main` push کن.
-4. سپس Day 4 را از Offer schema و inventory fields آغاز کن.
+1. `git status` را بخوان و مطمئن شو `match-mvp.zip` وارد stage نمی‌شود.
+2. Day 4 را روی Expo Go گوشی واقعی smoke test کن: login، dashboard، ساخت هر reward type، انتخاب تصویر، detail، edit و pause/activate.
+3. اگر تست گوشی پاس شد، checkpoint Day 4 را push کن.
+4. Day 5 را از Promotion schema، eligibility query و deterministic scoring آغاز کن؛ دکمه «پروموت پیشنهاد» در detail عمداً placeholder گام بعد است.
 
 ---
 
@@ -46,7 +46,7 @@ npx tsc --noEmit
 - محصول mobile-first است، ولی preview وب نیز باید قابل استفاده باشد.
 - ظاهر فعلی از پلتفرم تبلیغاتی «جریان» الهام گرفته: راست‌چین، تم روشن، بنفش اصلی، کارت‌های سفید و پس‌زمینهٔ بنفش بسیار روشن.
 - فعلاً `app/index.tsx` نساز. وجود هم‌زمان آن و `app/(auth)/index.tsx` باعث conflict مسیر index شده بود.
-- dashboard/home تا کامل شدن onboarding اضافه نشود.
+- onboarding کامل شده و dashboard کسب‌وکار اکنون مجاز و پیاده‌سازی‌شده است.
 - بعد از هر مرحله:
   - `npx tsc --noEmit`
   - تست رفتار واقعی
@@ -120,7 +120,9 @@ Offer
 
 ## 5. وضعیت Git در زمان آخرین به‌روزرسانی
 
-Branch محلی `main` در آخرین بررسی چهار commit از `origin/main` جلوتر بود.
+Branch محلی `main` یک commit از `origin/main` جلوتر است:
+
+نام checkpoint: `complete Day 4 Offer vertical slice`.
 
 ### commitهای موجود
 
@@ -141,19 +143,7 @@ ff3c38c has some bugs
 
 ### تغییرات فعلی commit‌نشده
 
-در آخرین بررسی، کد Day 3 clean و commit شده بود؛ تغییر فعلی فقط به‌روزرسانی همین دو سند است:
-
-```text
-M  PROJECT_HANDOFF.md
-M  DAY_3_IMPLEMENTATION_PLAN.md
-```
-
-Day 3 در commitهای `f6f0e8c`، `b7a5e62` و `6c8b283` ثبت شده ولی هنوز push نشده است. تغییرات فعلی را پیش از checkpoint مرور کن:
-
-```bash
-git diff --cached --stat
-git diff --cached
-```
+کد Day 4 commit شده است. تنها فایل untracked شناخته‌شده `match-mvp.zip` است؛ این artifact متعلق به کاربر است و حذف، ویرایش یا stage نشود. دو revision اولیه Offer (`062...` و `749...`) با اینکه ابتدا untracked بودند روی DB اجرا شده بودند و به همین دلیل در commit Day 4 حفظ شدند.
 
 پیش از commit وضعیت Git دوباره بررسی شود، چون ممکن است صاحب پروژه هم‌زمان commit یا push انجام داده باشد.
 
@@ -207,7 +197,7 @@ git diff --cached
 - [x] تست واقعی register → login → me با دیتابیس
 - [x] commit و push این بخش با `6fcba30`
 
-### Day 3 — Publisher Profile Normalization & Complete Onboarding — تقریباً کامل
+### Day 3 — Publisher Profile Normalization & Complete Onboarding — انجام شده
 
 - [x] طراحی و migration جداول نرمال‌شدهٔ publisher
 - [x] اعمال migration `c4d3e7f9a021` روی PostgreSQL واقعی
@@ -225,8 +215,34 @@ git diff --cached
 - [x] تست کامل web flow و reload/session resume
 - [x] TypeScript، Python compile و iOS production bundle
 - [x] commitهای checkpoint
-- [ ] smoke test نهایی روی Expo Go گوشی فیزیکی
-- [ ] push چهار commit محلی Day 3
+- [x] push commitهای Day 3 تا `6d46f7c` روی `origin/main`
+- [ ] smoke test مجدد روی گوشی فقط در صورت regression یا تغییر native
+
+### Day 4 — Offer، Inventory، Image Storage و Business Screens — پیاده‌سازی کامل
+
+- [x] حفظ دو Offer قدیمی و migration رو‌به‌جلوی آن‌ها از budget prototype به CASH Offer
+- [x] `Offer` مطابق PRD با PRODUCT / SERVICE / CASH / HYBRID
+- [x] `retail_value`، `cash_amount`، `units_per_deal`، available/reserved inventory
+- [x] fulfillment notes، remote fulfillment، expiry و ACTIVE/PAUSED/EXPIRED
+- [x] DB check constraintهای reward-specific و non-negative values
+- [x] جدول `offer_images` و storage عمومی محلی برای development
+- [x] اعتبارسنجی MIME، signature، extension مشتق‌شده و سقف 10MB
+- [x] create/list/detail/edit و pause/activate/expire API
+- [x] owner-scoping و جلوگیری از خواندن Offer کسب‌وکار دیگر
+- [x] endpoint options برای category، reward types و currency
+- [x] route صحیح Business login: profile ناقص → onboarding؛ profile کامل → dashboard
+- [x] Business Profile → Create Offer بلافاصله پس از موفقیت
+- [x] dashboard موبایل‌اول با CTA، summary، فیلتر، refresh، empty/error/loading state
+- [x] فرم پویا و مشترک create/edit با validation و image picker واقعی
+- [x] Offer detail با تصویر، ارزش، inventory، fulfillment و lifecycle actions
+- [x] placeholder شفاف Promote برای شروع Day 5 بدون موفقیت جعلی
+- [x] رفع API IP قدیمی: web از hostname و Expo Go از `Constants.expoConfig.hostUri`
+- [x] migrationهای `d4f0a9c21b73` و `e5b84a61c902` روی PostgreSQL محلی
+- [x] smoke test واقعی چهار reward type + image + owner isolation + lifecycle
+- [x] TypeScript، Python compile، OpenAPI، web export و mobile-width browser flow
+- [ ] تست انتخاب تصویر و lifecycle روی Expo Go گوشی فیزیکی
+- [x] commit checkpoint Day 4 با پیام `complete Day 4 Offer vertical slice`
+- [ ] push checkpoint Day 4 پس از تست گوشی
 
 ---
 
@@ -239,7 +255,7 @@ Register
   → ثبت display name + email + password
   → login خودکار
   → Role Selection
-  → BUSINESS: Business Profile
+  → BUSINESS: Business Profile → Create Offer → Offer Detail → Dashboard
   → PUBLISHER: Publisher Profile
   → Success
 ```
@@ -250,25 +266,18 @@ Register
 Login
   → GET /auth/me
   → بدون role: Role Selection
-  → BUSINESS: Business Profile
-  → PUBLISHER: Publisher Profile
+  → BUSINESS بدون profile: Business Profile
+  → BUSINESS با profile: Business Dashboard
+  → PUBLISHER: ادامه از next_step واقعی wizard
 ```
 
-### محدودیت فعلی routing
-
-resume logic هنوز هوشمند نیست. اگر کاربر قبلاً profile ساخته باشد، login او را بر اساس role دوباره به صفحهٔ profile می‌فرستد و ممکن است backend خطای «profile already exists» بدهد. این مورد باید در Day 3 با endpoint وضعیت onboarding و routing شرطی حل شود.
+Resume routing برای هر دو نقش پیاده‌سازی شده است. `app/index.tsx` وجود ندارد؛ route `/` همان `app/(auth)/index.tsx` است و session ذخیره‌شده از آنجا به مسیر صحیح منتقل می‌شود.
 
 ---
 
 ## 8. APIهای فعلی
 
-Base URL پیش‌فرض فعلی frontend:
-
-```text
-http://10.215.160.133:8000/api/v1
-```
-
-این IP به شبکهٔ Wi-Fi وابسته است و ممکن است تغییر کند. `src/services/api.ts` ابتدا مقدار `EXPO_PUBLIC_API_URL` را می‌خواند و در نبود آن از IP بالا استفاده می‌کند. الگوی تنظیم در `.env.example` قرار دارد. بعد از تغییر `.env` باید Metro دوباره اجرا شود.
+`src/services/api.ts` ابتدا `EXPO_PUBLIC_API_URL` را می‌خواند. در development، web به‌طور خودکار از hostname صفحه و Expo Go از host فعلی Metro (`Constants.expoConfig.hostUri`) استفاده می‌کند؛ بنابراین تغییر Wi-Fi دیگر نیازمند hardcode کردن IP نیست. simulator fallback برابر `127.0.0.1` است. در production حتماً `EXPO_PUBLIC_API_URL` تنظیم شود.
 
 ### Authentication
 
@@ -320,6 +329,23 @@ GET    /api/v1/profiles/publisher/capabilities
 PUT    /api/v1/profiles/publisher/capabilities
 ```
 
+### Offers
+
+```text
+GET    /api/v1/offers/options
+POST   /api/v1/offers
+GET    /api/v1/offers?status=ACTIVE|PAUSED|EXPIRED
+GET    /api/v1/offers/{offer_id}
+PATCH  /api/v1/offers/{offer_id}
+POST   /api/v1/offers/{offer_id}/pause
+POST   /api/v1/offers/{offer_id}/activate
+POST   /api/v1/offers/{offer_id}/expire
+POST   /api/v1/offers/{offer_id}/images
+DELETE /api/v1/offers/{offer_id}/images/{image_id}
+```
+
+`GET /offers/me` فقط برای سازگاری prototype اولیه deprecated نگه داشته شده است. POST Offer همیشه پس از validation یک Offer در حالت ACTIVE می‌سازد. expired Offer read-only است و تمام read/writeهای خصوصی business owner-scoped هستند.
+
 Publisher فعلی این موارد را در JSON نگه می‌دارد:
 
 - `platforms`
@@ -339,15 +365,19 @@ e1903711c333  add business and publisher profiles
 fedfa7107d8e  make user role nullable
 a6c9d3f2b817  add user display_name
 c4d3e7f9a021  add publisher onboarding entities
+062f7ece2e5b  placeholder Offer migration (قبلاً روی DB اجرا شده؛ حذف نشود)
+749df1271d9e  create prototype offers table
+d4f0a9c21b73  complete PRD Offer inventory and offer_images schema
+e5b84a61c902  align Offer status column length with SQLAlchemy model
 ```
 
 آخرین وضعیت تأییدشدهٔ دیتابیس local:
 
 ```text
-c4d3e7f9a021 (head)
+e5b84a61c902 (head)
 ```
 
-این revision روی PostgreSQL توسعه اعمال شده، ۱۲ category seed شده و `alembic check` هیچ schema driftی گزارش نکرده است.
+این revision روی PostgreSQL توسعه اعمال شده است. دو Offer prototype بدون حذف داده به CASH/ACTIVE تبدیل شدند. تست Day 4 نیز رکوردهای disposable مشخص ایجاد کرده است.
 
 برای بررسی:
 
@@ -405,19 +435,47 @@ Root layout برنامه. Stackهای auth/onboarding را تعریف می‌ک�
 
 انتخاب BUSINESS یا PUBLISHER. role را با backend ذخیره می‌کند، store را به‌روزرسانی می‌کند و به فرم نقش مربوطه می‌رود.
 
-#### `app/(onboarding)/business.tsx`
+#### `app/(onboarding)/business-profile.tsx`
 
-فرم ساخت Business Profile. submit آن به endpoint واقعی backend متصل است. فعلاً پس از موفقیت نتیجهٔ موفق نشان می‌دهد؛ Day 4 باید آن را به Create Offer متصل کند.
+فرم ساخت Business Profile. بعد از پاسخ واقعی backend مستقیماً به `/business/create-offer` می‌رود. نام جدید از collision مسیر `/business` با dashboard جلوگیری می‌کند.
 
 #### `app/(onboarding)/publisher.tsx`
 
-فرم اولیهٔ Publisher Profile. bio، city، platforms، followers count، content capabilities و personal interests را می‌گیرد. این نسخه Day 2 است و در Day 3 باید به wizard نرمال‌شده توسعه پیدا کند.
+مرحله Base Profile در wizard کامل Publisher. مراحل platform account، media plan، preferences و completion در فایل‌های sibling جدا هستند.
+
+#### `app/business/index.tsx`
+
+dashboard واقعی Business با summary، فیلتر status، pull-to-refresh، empty/error/loading state و list کارت‌های Offer.
+
+#### `app/business/create-offer.tsx`
+
+صفحه create که options را از backend می‌گیرد، فرم مشترک را نمایش می‌دهد، Offer را ایجاد می‌کند و تصویر اختیاری را upload می‌کند.
+
+#### `app/business/offer/[id].tsx`
+
+Offer Detail با تصویر، reward/value/inventory، fulfillment، status actions و CTA پروموت برای شروع Day 5.
+
+#### `app/business/offer/[id]/edit.tsx`
+
+ویرایش Offer با همان فرم مشترک؛ در صورت انتخاب تصویر جدید، پس از upload موفق تصویر اول قبلی را جایگزین می‌کند.
 
 ### Frontend services — `src/services/`
 
 #### `src/services/api.ts`
 
-wrapper مرکزی `fetch`، Base URL، headerهای JSON، افزودن Bearer token و تبدیل خطاهای backend به پیام قابل نمایش.
+wrapper مرکزی `fetch` با timeout پانزده‌ثانیه، `ApiError` دارای status، JSON/FormData handling، URL محیط‌محور Expo Go/Web و resolve کردن storage asset URL.
+
+#### `src/services/offers.ts` و `src/types/offers.ts`
+
+قرارداد typed کامل Offer و تمام درخواست‌های list/detail/create/update/status/image.
+
+#### `src/features/offers/OfferForm.tsx`
+
+فرم mobile-first مشترک create/edit؛ فیلدها را براساس reward type نشان می‌دهد، اعداد فارسی را normalize می‌کند، expiry و quantity را validate می‌کند و از Expo Image Picker استفاده می‌کند.
+
+#### `src/features/offers/components.tsx`
+
+کارت Offer، badge وضعیت، header، empty state، labelها و money formatting مشترک.
 
 #### `src/services/auth.ts`
 
@@ -450,7 +508,7 @@ Zustand auth store. موارد اصلی:
 
 #### `src/theme/index.ts`
 
-توکن‌های رنگ، spacing، radius و typography مشترک. مبنای ظاهر Jaryan-inspired و mobile-first است؛ به‌جای رنگ‌های پراکنده از این فایل استفاده شود.
+توکن‌های ارتقایافتهٔ Jaryan-inspired: بنفش اصلی/تیره/ملایم، accent محدود، surface hierarchy، status tones، typography، radius و shadow. مینیمال و mobile-first باقی بماند.
 
 ### Backend entry/config — `backend/app/`
 
@@ -504,6 +562,10 @@ endpoint انتخاب role برای کاربر authenticated.
 
 endpointهای ساخت/دریافت Business و Publisher profile.
 
+#### `backend/app/api/v1/offers/router.py`
+
+قرارداد HTTP کامل Day 4. current business را enforce می‌کند، domain errorها را به status مناسب تبدیل می‌کند و upload multipart را فقط برای Offer خود کاربر می‌پذیرد.
+
 ### Backend models — `backend/app/models/`
 
 #### `backend/app/models/user.py`
@@ -521,6 +583,10 @@ endpointهای ساخت/دریافت Business و Publisher profile.
 #### `backend/app/models/__init__.py`
 
 export/import مدل‌ها برای ثبت درست metadata و Alembic. هنگام افزودن مدل جدید فراموش نشود.
+
+#### `backend/app/models/offer.py` و `offer_image.py`
+
+مدل master Offer مطابق PRD و reference تصاویر. قوانین reward/inventory علاوه بر Pydantic در DB check constraint نیز enforce شده‌اند.
 
 ### Backend schemas — `backend/app/schemas/`
 
@@ -540,6 +606,10 @@ payload و responseهای Business Profile.
 
 payload و responseهای Publisher Profile فعلی. در Day 3 باید schemaهای Platform Account و Media Plan جدا اضافه شوند.
 
+#### `backend/app/schemas/offer.py`
+
+enumها و قرارداد create/update/response/options با validation ترکیب reward. CASH موجودی نمی‌گیرد؛ PRODUCT/SERVICE به retail value و units نیاز دارند؛ HYBRID هر دو component را می‌خواهد.
+
 ### Backend repositories — `backend/app/repositories/`
 
 #### `backend/app/repositories/user_repository.py`
@@ -549,6 +619,10 @@ payload و responseهای Publisher Profile فعلی. در Day 3 باید schema
 #### `backend/app/repositories/profile_repository.py`
 
 عملیات DB پروفایل‌های Business و Publisher. endpoint نباید queryهای پراکنده را مستقیماً انجام دهد.
+
+#### `backend/app/repositories/offer_repository.py`
+
+queryهای owner-scoped، eager loading تصویر، auto-expiry persistence و عملیات image/order.
 
 ### Backend services — `backend/app/services/`
 
@@ -560,9 +634,17 @@ payload و responseهای Publisher Profile فعلی. در Day 3 باید schema
 
 قوانین ساخت profile، کنترل role و جلوگیری از profile تکراری.
 
+#### `backend/app/services/offer_service.py`
+
+قوانین مالکیت، category، create/update/status transition و محدودیت تصاویر Offer.
+
+#### `backend/app/services/storage_service.py`
+
+storage adapter کوچک development برای Offer image. مسیر root configurable است، filename تصادفی است و MIME/signature/size validate می‌شود. پیش از production باید implementation آن به object storage منتقل شود، بدون تغییر قرارداد OfferImage.
+
 ### Alembic — `backend/migrations/versions/`
 
-هر فایل یک تغییر schema قابل ردیابی است. فایل `a6c9d3f2b817_add_user_display_name.py` جدیدترین migration فعلی و روی DB اعمال‌شده است.
+هر فایل یک تغییر schema قابل ردیابی است. `e5b84a61c902_align_offer_status_length.py` head فعلی و روی DB اعمال‌شده است. revisionهای `062...` و `749...` حذف یا squash نشوند چون DB فعلی آن‌ها را در history دارد.
 
 ---
 
@@ -666,15 +748,18 @@ JSONهای Day 2 فعلاً برای backward compatibility حفظ شوند؛ د
 
 - [ ] ثبت‌نام phone OTP طبق PRD
 - [ ] حداقل یک social login طبق PRD
-- [ ] resume routing برای profile موجود
+- [x] resume routing برای profile موجود در هر دو نقش
 - [x] امکان تنظیم Base URL با `EXPO_PUBLIC_API_URL`
-- [ ] حذف fallback وابسته به LAN پس از مشخص شدن محیط deployment
+- [x] حذف hardcode IP وابسته به LAN در development
 - [ ] اتصال health router
-- [ ] تست خودکار backend با pytest
+- [x] smoke test خودکار Day 3 و Day 4 (script-based)
+- [ ] تبدیل suite به pytest و اجرای CI
 - [ ] تست خودکار frontend
 - [ ] پشتیبانی احتمالی یک User از هر دو role طبق PRD
-- [ ] Day 4: Create Offer برای Business
-- [ ] dashboard/home پس از کامل شدن onboarding
+- [x] Day 4: Offer/Inventory/Image و Business Offer screens
+- [x] dashboard/home کسب‌وکار پس از کامل شدن onboarding
+- [ ] جایگزینی local Offer storage با object storage production
+- [ ] Day 5: Promotion، eligibility و deterministic scoring
 - [ ] پاک‌سازی یا علامت‌گذاری رکوردهای تستی DB قبل از production
 
 دیتابیس توسعه ممکن است رکوردهای تستی با نام‌های codex/preview داشته باشد. credentials آن‌ها در این سند قرار نگرفته و نباید قرار بگیرد.
@@ -703,7 +788,7 @@ http://localhost:8000/docs
 npx expo start
 ```
 
-سپس QR را با Expo Go باز کن. iPhone و Mac باید روی یک Wi-Fi باشند و IP داخل `src/services/api.ts` باید IP فعلی Mac باشد.
+سپس QR را با Expo Go باز کن. iPhone و Mac باید روی یک Wi-Fi باشند. IP از host فعلی Metro به‌صورت خودکار استخراج می‌شود؛ دیگر فایل `src/services/api.ts` را برای تغییر Wi-Fi ویرایش نکن. اگر backend روی host دیگری است، در `.env` مقدار `EXPO_PUBLIC_API_URL` را تنظیم و Metro را restart کن.
 
 ### Web preview
 
@@ -743,6 +828,13 @@ npx tsc --noEmit
 - Python compile
 - iOS production bundle، 979 module در آخرین اجرای ثبت‌شده
 - بررسی migration head و اعمال migration `display_name`
+- migration Day 3 `c4d3e7f9a021`
+- migrationهای Day 4 `d4f0a9c21b73` و `e5b84a61c902`، حفظ داده‌های prototype و `alembic check` بدون drift
+- `python3 -m backend.tests.day4_smoke`: چهار reward type، validation، list/detail/edit، owner isolation، image upload/delete و status lifecycle
+- OpenAPI: تمام routeهای `/offers` تولید شدند
+- web export Day 4: 715 modules
+- mobile viewport `390x844`: login → business dashboard → create Offer → detail → edit
+- تست واقعی رفع IP قدیمی: browser پس از اصلاح به backend وصل شد و route `/business` را باز کرد
 
 هر تست باید پس از تغییر بخش مربوطه دوباره اجرا شود؛ این لیست تضمین نمی‌کند سرورهای فعلی هنوز روشن‌اند.
 

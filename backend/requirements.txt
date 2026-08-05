@@ -9,3 +9,5 @@ passlib[bcrypt]
 bcrypt==4.0.1
 pyjwt
 email-validator
+python-multipart==0.0.22
+httpx2==2.9.1

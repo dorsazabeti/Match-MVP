@@ -6,6 +6,9 @@ from backend.app.models.platform_account import PlatformAccount
 from backend.app.models.publisher_capability import PublisherCapability
 from backend.app.models.publisher_interest import PublisherInterest
 from backend.app.models.publisher_profile import PublisherProfile
+from backend.app.models.offer import Offer
+from backend.app.models.offer_image import OfferImage
+
 
 __all__ = [
     "User",
@@ -16,4 +19,6 @@ __all__ = [
     "PublisherCapability",
     "PublisherInterest",
     "PublisherProfile",
+    "Offer",
+    "OfferImage",
 ]

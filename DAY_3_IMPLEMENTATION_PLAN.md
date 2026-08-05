@@ -4,9 +4,9 @@
 >
 > منبع حقیقت محصول: `Match MVP Product Requirements Document.pdf`، بخش‌های 4، 5.2، 10، 12.2، 14 و 15.2
 >
-> آخرین تطبیق با repository: 2026-08-03 — Asia/Tehran
+> آخرین تطبیق با repository: 2026-08-05 — Asia/Tehran
 
-**وضعیت اجرا:** schema، API و wizard کامل شده‌اند. تست API و web flow پاس شده است. فقط smoke test روی Expo Go گوشی و push commitهای محلی باقی مانده است.
+**وضعیت اجرا:** Day 3 کامل، commit و push شده است. این فایل سند تاریخی تصمیم‌ها و acceptance criteria روز سوم باقی می‌ماند. توسعه فعلی Day 4 را کامل کرده و نقطه شروع بعدی Day 5 است؛ وضعیت زنده در `PROJECT_HANDOFF.md` ثبت می‌شود.
 
 ---
 

@@ -12,6 +12,7 @@ import {
 import { theme } from "../../src/theme";
 import { useAuthStore } from "../../src/store/auth";
 import { createBusinessProfile } from "../../src/services/profiles";
+import { router } from "expo-router";
 
 
 export default function BusinessProfileScreen() {
@@ -26,7 +27,6 @@ export default function BusinessProfileScreen() {
   const [description, setDescription] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isCreated, setIsCreated] = useState(false);
 
 
   async function handleSubmit() {
@@ -58,7 +58,7 @@ export default function BusinessProfileScreen() {
         }
       );
 
-      setIsCreated(true);
+      router.replace("/business/create-offer");
     } catch (submissionError) {
       setError(
         submissionError instanceof Error
@@ -68,20 +68,6 @@ export default function BusinessProfileScreen() {
     } finally {
       setIsSubmitting(false);
     }
-  }
-
-  if (isCreated) {
-    return (
-      <View style={styles.successContainer}>
-        <View style={styles.card}>
-          <Text style={styles.successBadge}>✓</Text>
-          <Text style={styles.title}>پروفایل کسب‌وکار ساخته شد</Text>
-          <Text style={styles.successText}>
-            اطلاعات شما با موفقیت ثبت شد. مرحله بعدی ساخت پیشنهاد همکاری است.
-          </Text>
-        </View>
-      </View>
-    );
   }
 
   return (

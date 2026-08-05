@@ -12,6 +12,8 @@ import { router } from "expo-router";
 
 import { theme } from "../../src/theme";
 import { loginUser, getCurrentUser } from "../../src/services/auth";
+import { ApiError } from "../../src/services/api";
+import { getBusinessProfile } from "../../src/services/profiles";
 import {
   getPublisherOnboardingRoute,
   getPublisherOnboardingStatus,
@@ -60,7 +62,16 @@ export default function LoginScreen() {
     }
 
     if (role === "BUSINESS") {
-      router.replace("/business");
+      try {
+        await getBusinessProfile(authToken);
+        router.replace("/business");
+      } catch (profileError) {
+        if (profileError instanceof ApiError && profileError.status === 404) {
+          router.replace("/business-profile");
+          return;
+        }
+        throw profileError;
+      }
       return;
     }
 

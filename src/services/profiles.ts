@@ -23,6 +23,15 @@ export async function createBusinessProfile(
 }
 
 
+export async function getBusinessProfile(token: string) {
+  return apiRequest("/profiles/business/me", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+
 export async function createPublisherProfile(
   token: string,
   data: {

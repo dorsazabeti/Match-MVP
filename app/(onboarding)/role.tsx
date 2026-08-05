@@ -58,7 +58,7 @@ export default function RoleScreen() {
       }
 
       if (role === "BUSINESS") {
-        router.replace("/business");
+        router.replace("/business-profile");
         return;
       }
 
