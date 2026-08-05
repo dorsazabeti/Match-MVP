@@ -8,6 +8,8 @@ from backend.app.models.publisher_interest import PublisherInterest
 from backend.app.models.publisher_profile import PublisherProfile
 from backend.app.models.offer import Offer
 from backend.app.models.offer_image import OfferImage
+from backend.app.models.promotion import Promotion
+from backend.app.models.recommendation import Recommendation
 
 
 __all__ = [
@@ -21,4 +23,6 @@ __all__ = [
     "PublisherProfile",
     "Offer",
     "OfferImage",
+    "Promotion",
+    "Recommendation",
 ]

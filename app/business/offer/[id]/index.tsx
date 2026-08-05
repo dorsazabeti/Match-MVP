@@ -16,16 +16,18 @@ import {
   formatMoney,
   OfferStatusBadge,
   REWARD_LABELS,
-} from "../../../src/features/offers/components";
-import { resolveApiAssetUrl } from "../../../src/services/api";
+} from "../../../../src/features/offers/components";
+import { resolveApiAssetUrl } from "../../../../src/services/api";
 import {
   getOffer,
   getOfferOptions,
   setOfferStatus,
-} from "../../../src/services/offers";
-import { useAuthStore } from "../../../src/store/auth";
-import { theme } from "../../../src/theme";
-import type { Offer, OfferOptions } from "../../../src/types/offers";
+} from "../../../../src/services/offers";
+import { listPromotions } from "../../../../src/services/promotions";
+import { useAuthStore } from "../../../../src/store/auth";
+import { theme } from "../../../../src/theme";
+import type { Offer, OfferOptions } from "../../../../src/types/offers";
+import type { Promotion } from "../../../../src/types/promotions";
 
 
 export default function OfferDetailScreen() {
@@ -33,6 +35,7 @@ export default function OfferDetailScreen() {
   const token = useAuthStore((state) => state.token);
   const [offer, setOffer] = useState<Offer | null>(null);
   const [options, setOptions] = useState<OfferOptions | null>(null);
+  const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,12 +44,14 @@ export default function OfferDetailScreen() {
     if (!token || !id) return;
     try {
       setError(null);
-      const [offerResponse, optionResponse] = await Promise.all([
+      const [offerResponse, optionResponse, promotionResponse] = await Promise.all([
         getOffer(token, id),
         getOfferOptions(),
+        listPromotions(token, id),
       ]);
       setOffer(offerResponse);
       setOptions(optionResponse);
+      setPromotions(promotionResponse.items);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "پیشنهاد پیدا نشد.");
     } finally {
@@ -193,14 +198,38 @@ export default function OfferDetailScreen() {
 
         {offer.status === "ACTIVE" ? (
           <Pressable
-            onPress={() => Alert.alert(
-              "گام بعدی Match",
-              "ساخت Promotion و پیشنهاد ناشران در Day 5 فعال می‌شود. Offer شما همین حالا آماده است."
-            )}
+            onPress={() => router.push(`/business/offer/${offer.id}/promote`)}
             style={styles.primaryButton}
           >
-            <Text style={styles.primaryButtonText}>پروموت پیشنهاد</Text>
+            <Text style={styles.primaryButtonText}>پیدا کردن رسانه‌های مناسب</Text>
           </Pressable>
+        ) : null}
+
+        {promotions.length ? (
+          <>
+            <Text style={styles.sectionTitle}>پروموشن‌های این پیشنهاد</Text>
+            <View style={styles.promotionList}>
+              {promotions.map((promotion) => (
+                <Pressable
+                  key={promotion.id}
+                  onPress={() => router.push(`/business/promotion/${promotion.id}/recommendations`)}
+                  style={styles.promotionCard}
+                >
+                  <View style={styles.promotionCount}>
+                    <Text style={styles.promotionCountValue}>{promotion.recommendation_count.toLocaleString("fa-IR")}</Text>
+                    <Text style={styles.promotionCountLabel}>رسانه</Text>
+                  </View>
+                  <View style={styles.promotionCopy}>
+                    <Text style={styles.promotionTitle}>نتایج {promotion.goal}</Text>
+                    <Text style={styles.promotionMeta}>
+                      {promotion.target_city || "همه شهرها"} · {new Date(promotion.created_at).toLocaleDateString("fa-IR")}
+                    </Text>
+                  </View>
+                  <Text style={styles.promotionArrow}>‹</Text>
+                </Pressable>
+              ))}
+            </View>
+          </>
         ) : null}
 
         <View style={styles.actionsRow}>
@@ -365,6 +394,32 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.primary,
   },
   primaryButtonText: { ...theme.typography.body, color: theme.colors.surface, fontWeight: "900" },
+  promotionList: { gap: theme.spacing.s },
+  promotionCard: {
+    minHeight: 76,
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    gap: theme.spacing.sm,
+    padding: theme.spacing.sm,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    backgroundColor: theme.colors.surface,
+  },
+  promotionCount: {
+    width: 54,
+    height: 54,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: theme.colors.primarySoft,
+  },
+  promotionCountValue: { ...theme.typography.h3, color: theme.colors.primaryDark },
+  promotionCountLabel: { fontSize: 9, color: theme.colors.primary },
+  promotionCopy: { flex: 1 },
+  promotionTitle: { ...theme.typography.caption, color: theme.colors.text, fontWeight: "900", textAlign: "right" },
+  promotionMeta: { ...theme.typography.micro, color: theme.colors.textSecondary, textAlign: "right" },
+  promotionArrow: { fontSize: 28, color: theme.colors.textMuted },
   actionsRow: { flexDirection: "row-reverse", gap: theme.spacing.s, marginTop: theme.spacing.sm },
   secondaryButton: {
     flex: 1,

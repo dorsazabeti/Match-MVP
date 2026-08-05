@@ -8,7 +8,7 @@
 **Repository:** `/Users/dorsazabeti/match-mvp`  
 **Branch:** `main`  
 **PRD اصلی:** `/Users/dorsazabeti/Downloads/Match MVP Product Requirements Document.pdf`  
-**وضعیت کلی:** Day 1 تا Day 3 کامل و روی `origin/main` هستند. Day 4 به‌صورت vertical slice واقعی پیاده‌سازی و در checkpoint `complete Day 4 Offer vertical slice` ثبت شده است: Offer schema و inventory، چهار reward type، image storage، owner-scoped API، dashboard و صفحه‌های create/list/detail/edit و lifecycle. migration و تست API/DB و mobile-width web پاس شده‌اند. فقط smoke test نهایی Day 4 روی Expo Go گوشی و push این checkpoint باقی مانده است.
+**وضعیت کلی:** Day 1 تا Day 5 در کد، دیتابیس و تست‌های یکپارچه کامل‌اند. Day 5 شامل Promotion، eligibility، deterministic scoring قابل توضیح، ذخیره Recommendation، فرم mobile-first Promote و صفحه نتایج رتبه‌بندی است. migration تا `f1c7b2d93a44` اعمال شده، TypeScript و تست واقعی API/DB/browser پاس شده‌اند. فقط smoke test نهایی native روی Expo Go برای Day 4/5 و push checkpointهای محلی باقی مانده است.
 
 ---
 
@@ -31,9 +31,9 @@ npx tsc --noEmit
 ### اقدام بعدی دقیق
 
 1. `git status` را بخوان و مطمئن شو `match-mvp.zip` وارد stage نمی‌شود.
-2. Day 4 را روی Expo Go گوشی واقعی smoke test کن: login، dashboard، ساخت هر reward type، انتخاب تصویر، detail، edit و pause/activate.
-3. اگر تست گوشی پاس شد، checkpoint Day 4 را push کن.
-4. Day 5 را از Promotion schema، eligibility query و deterministic scoring آغاز کن؛ دکمه «پروموت پیشنهاد» در detail عمداً placeholder گام بعد است.
+2. Day 4 و Day 5 را روی Expo Go گوشی واقعی smoke test کن: login، dashboard، Offer detail، Promote، انتخاب معیارها و Recommendations.
+3. اگر تست گوشی پاس شد، checkpointهای محلی را push کن.
+4. Day 6 را طبق PRD از collaboration package candidateها، LLM selector با خروجی schema-validated و fallback قطعی آغاز کن؛ `package_json` در Recommendation عمداً تا آن روز nullable است.
 
 ---
 
@@ -120,7 +120,7 @@ Offer
 
 ## 5. وضعیت Git در زمان آخرین به‌روزرسانی
 
-Branch محلی `main` یک commit از `origin/main` جلوتر است:
+پیش از ثبت checkpoint Day 5، branch محلی `main` یک commit از `origin/main` جلوتر بود:
 
 نام checkpoint: `complete Day 4 Offer vertical slice`.
 
@@ -143,7 +143,7 @@ ff3c38c has some bugs
 
 ### تغییرات فعلی commit‌نشده
 
-کد Day 4 commit شده است. تنها فایل untracked شناخته‌شده `match-mvp.zip` است؛ این artifact متعلق به کاربر است و حذف، ویرایش یا stage نشود. دو revision اولیه Offer (`062...` و `749...`) با اینکه ابتدا untracked بودند روی DB اجرا شده بودند و به همین دلیل در commit Day 4 حفظ شدند.
+کد Day 4 commit شده است و تغییرات Day 5 برای checkpoint آماده‌اند. تنها artifact خارج از پروژه `match-mvp.zip` است؛ متعلق به کاربر است و حذف، ویرایش یا stage نشود. دو revision اولیه Offer (`062...` و `749...`) روی DB اجرا شده‌اند و حذف نشوند.
 
 پیش از commit وضعیت Git دوباره بررسی شود، چون ممکن است صاحب پروژه هم‌زمان commit یا push انجام داده باشد.
 
@@ -244,6 +244,26 @@ ff3c38c has some bugs
 - [x] commit checkpoint Day 4 با پیام `complete Day 4 Offer vertical slice`
 - [ ] push checkpoint Day 4 پس از تست گوشی
 
+### Day 5 — Promotion، Eligibility و Recommendations — انجام شده
+
+- [x] مدل و migration واقعی `promotions` و `recommendations`
+- [x] وضعیت‌های GENERATING/READY/PAUSED/FILLED/EXPIRED و AVAILABLE/INVITED/DISMISSED/UNAVAILABLE
+- [x] owner-scoped create/list/detail/recommendations API
+- [x] الزام ACTIVE بودن Offer و کنترل ظرفیت موجودی یا سقف cash deal
+- [x] hard eligibility ناشر فعال و discoverable، حساب/پلن فعال، currency، شهر و پلتفرم
+- [x] حذف تعرفه‌های به‌وضوح ناسازگار با حداقل نسبت ارزش 0.5
+- [x] scoring قطعی 100 امتیازی: interest 30، value 30، city 15، platform 15، capability 10
+- [x] ذخیره snapshot عمومی ناشر، بهترین media plan، factor breakdown، explanation و confidence
+- [x] candidate limit برابر 50 و cash deal cap برابر 50 در config
+- [x] فرم Promote موبایل‌اول با goal، شهر اختیاری، platformها، ظرفیت، زمان‌بندی و brief
+- [x] صفحه نتایج ranked با score، تعرفه، reach، explanation و factor bars
+- [x] اتصال CTA Offer Detail و نمایش تاریخچه Promotionهای Offer
+- [x] رفع collision مسیر Detail با انتقال به `app/business/offer/[id]/index.tsx`
+- [x] migration `f1c7b2d93a44`، `alembic check` بدون drift و OpenAPI
+- [x] smoke test واقعی DB/API و تست مرورگر کامل create → results
+- [x] TypeScript check و بررسی بصری RTL/mobile-first
+- [ ] smoke test همین جریان روی Expo Go گوشی فیزیکی
+
 ---
 
 ## 7. جریان فعلی کاربر
@@ -272,6 +292,13 @@ Login
 ```
 
 Resume routing برای هر دو نقش پیاده‌سازی شده است. `app/index.tsx` وجود ندارد؛ route `/` همان `app/(auth)/index.tsx` است و session ذخیره‌شده از آنجا به مسیر صحیح منتقل می‌شود.
+
+جریان فعلی Day 5 برای Business:
+
+```text
+Active Offer → Promote Form → deterministic eligibility/scoring
+→ persisted Promotion + Recommendations → ranked result cards
+```
 
 ---
 
@@ -346,6 +373,18 @@ DELETE /api/v1/offers/{offer_id}/images/{image_id}
 
 `GET /offers/me` فقط برای سازگاری prototype اولیه deprecated نگه داشته شده است. POST Offer همیشه پس از validation یک Offer در حالت ACTIVE می‌سازد. expired Offer read-only است و تمام read/writeهای خصوصی business owner-scoped هستند.
 
+### Promotions و Recommendations
+
+```text
+GET  /api/v1/promotions/options
+POST /api/v1/offers/{offer_id}/promotions
+GET  /api/v1/promotions?offer_id={offer_id}
+GET  /api/v1/promotions/{promotion_id}
+GET  /api/v1/promotions/{promotion_id}/recommendations
+```
+
+ساخت Promotion در Day 5 synchronous و transaction-safe است: رکورد با GENERATING ساخته، candidateها یک‌باره query و با داده‌های batch enrich، Recommendationها ذخیره و Promotion برابر READY می‌شود. `package_json` و `ai_log_id` برای Day 6 عمداً nullable هستند؛ AI نمایشی یا explanation ساختگی وجود ندارد.
+
 Publisher فعلی این موارد را در JSON نگه می‌دارد:
 
 - `platforms`
@@ -369,15 +408,16 @@ c4d3e7f9a021  add publisher onboarding entities
 749df1271d9e  create prototype offers table
 d4f0a9c21b73  complete PRD Offer inventory and offer_images schema
 e5b84a61c902  align Offer status column length with SQLAlchemy model
+f1c7b2d93a44  add promotions and persisted recommendations
 ```
 
 آخرین وضعیت تأییدشدهٔ دیتابیس local:
 
 ```text
-e5b84a61c902 (head)
+f1c7b2d93a44 (head)
 ```
 
-این revision روی PostgreSQL توسعه اعمال شده است. دو Offer prototype بدون حذف داده به CASH/ACTIVE تبدیل شدند. تست Day 4 نیز رکوردهای disposable مشخص ایجاد کرده است.
+این revision روی PostgreSQL توسعه اعمال شده است و `alembic check` drift ندارد. تست‌های Day 4 و Day 5 رکوردهای disposable و واضح ایجاد کرده‌اند.
 
 برای بررسی:
 
@@ -451,13 +491,21 @@ dashboard واقعی Business با summary، فیلتر status، pull-to-refresh
 
 صفحه create که options را از backend می‌گیرد، فرم مشترک را نمایش می‌دهد، Offer را ایجاد می‌کند و تصویر اختیاری را upload می‌کند.
 
-#### `app/business/offer/[id].tsx`
+#### `app/business/offer/[id]/index.tsx`
 
-Offer Detail با تصویر، reward/value/inventory، fulfillment، status actions و CTA پروموت برای شروع Day 5.
+Offer Detail با تصویر، reward/value/inventory، fulfillment، status actions، CTA واقعی Promote و تاریخچه Promotionها. ساختار nested از conflict فایل و پوشه جلوگیری می‌کند.
 
 #### `app/business/offer/[id]/edit.tsx`
 
 ویرایش Offer با همان فرم مشترک؛ در صورت انتخاب تصویر جدید، پس از upload موفق تصویر اول قبلی را جایگزین می‌کند.
+
+#### `app/business/offer/[id]/promote.tsx`
+
+ورودی Day 5؛ Offer و promotion options را هم‌زمان می‌گیرد، فقط Offer فعال را می‌پذیرد و بعد از ساخت به نتایج می‌رود.
+
+#### `app/business/promotion/[id]/recommendations.tsx`
+
+صفحه ranked recommendationها با empty/loading/error state، score ring، تعرفه، reach، explanation و breakdown پنج عامل.
 
 ### Frontend services — `src/services/`
 
@@ -468,6 +516,14 @@ wrapper مرکزی `fetch` با timeout پانزده‌ثانیه، `ApiError` �
 #### `src/services/offers.ts` و `src/types/offers.ts`
 
 قرارداد typed کامل Offer و تمام درخواست‌های list/detail/create/update/status/image.
+
+#### `src/services/promotions.ts` و `src/types/promotions.ts`
+
+قرارداد typed Promotion/Recommendation و درخواست‌های options/create/list/detail/results.
+
+#### `src/features/promotions/PromotionForm.tsx`
+
+فرم مستقل mobile-first Day 5 با validation سمت client، سقف محاسبه‌شده موجودی و انتخاب هدف/شهر/پلتفرم/زمان‌بندی/brief.
 
 #### `src/features/offers/OfferForm.tsx`
 
@@ -566,6 +622,10 @@ endpointهای ساخت/دریافت Business و Publisher profile.
 
 قرارداد HTTP کامل Day 4. current business را enforce می‌کند، domain errorها را به status مناسب تبدیل می‌کند و upload multipart را فقط برای Offer خود کاربر می‌پذیرد.
 
+#### `backend/app/api/v1/promotions/router.py`
+
+قرارداد HTTP Day 5 برای options، create، list، detail و recommendationها؛ تمام routeهای خصوصی business owner-scoped هستند.
+
 ### Backend models — `backend/app/models/`
 
 #### `backend/app/models/user.py`
@@ -587,6 +647,10 @@ export/import مدل‌ها برای ثبت درست metadata و Alembic. هنگ
 #### `backend/app/models/offer.py` و `offer_image.py`
 
 مدل master Offer مطابق PRD و reference تصاویر. قوانین reward/inventory علاوه بر Pydantic در DB check constraint نیز enforce شده‌اند.
+
+#### `backend/app/models/promotion.py` و `recommendation.py`
+
+Promotion وابسته به Business/Offer و Recommendation یکتای promotion+publisher با score/factors/package/explanation/confidence؛ قوانین range و status در DB constraint نیز enforce شده‌اند.
 
 ### Backend schemas — `backend/app/schemas/`
 
@@ -610,6 +674,10 @@ payload و responseهای Publisher Profile فعلی. در Day 3 باید schema
 
 enumها و قرارداد create/update/response/options با validation ترکیب reward. CASH موجودی نمی‌گیرد؛ PRODUCT/SERVICE به retail value و units نیاز دارند؛ HYBRID هر دو component را می‌خواهد.
 
+#### `backend/app/schemas/promotion.py`
+
+enumها و قراردادهای validated Promotion، options و Recommendation response. platformها unique و زمان‌ها و desired deals محدود هستند.
+
 ### Backend repositories — `backend/app/repositories/`
 
 #### `backend/app/repositories/user_repository.py`
@@ -623,6 +691,10 @@ enumها و قرارداد create/update/response/options با validation ترک
 #### `backend/app/repositories/offer_repository.py`
 
 queryهای owner-scoped، eager loading تصویر، auto-expiry persistence و عملیات image/order.
+
+#### `backend/app/repositories/promotion_repository.py`
+
+queryهای owner-scoped Promotion و candidate query کارآمد؛ account/media plan را join و interest/capability را در دو batch query می‌گیرد تا N+1 ایجاد نشود.
 
 ### Backend services — `backend/app/services/`
 
@@ -638,13 +710,17 @@ queryهای owner-scoped، eager loading تصویر، auto-expiry persistence و
 
 قوانین مالکیت، category، create/update/status transition و محدودیت تصاویر Offer.
 
+#### `backend/app/services/promotion_service.py`
+
+قوانین promotable بودن Offer، hard eligibility، الگوریتم deterministic-v1، snapshot عوامل، explanation، persistence transaction و serialization نتیجه.
+
 #### `backend/app/services/storage_service.py`
 
 storage adapter کوچک development برای Offer image. مسیر root configurable است، filename تصادفی است و MIME/signature/size validate می‌شود. پیش از production باید implementation آن به object storage منتقل شود، بدون تغییر قرارداد OfferImage.
 
 ### Alembic — `backend/migrations/versions/`
 
-هر فایل یک تغییر schema قابل ردیابی است. `e5b84a61c902_align_offer_status_length.py` head فعلی و روی DB اعمال‌شده است. revisionهای `062...` و `749...` حذف یا squash نشوند چون DB فعلی آن‌ها را در history دارد.
+هر فایل یک تغییر schema قابل ردیابی است. `f1c7b2d93a44_add_promotions_and_recommendations.py` head فعلی و روی DB اعمال‌شده است. revisionهای `062...` و `749...` حذف یا squash نشوند چون DB فعلی آن‌ها را در history دارد.
 
 ---
 
@@ -759,7 +835,8 @@ JSONهای Day 2 فعلاً برای backward compatibility حفظ شوند؛ د
 - [x] Day 4: Offer/Inventory/Image و Business Offer screens
 - [x] dashboard/home کسب‌وکار پس از کامل شدن onboarding
 - [ ] جایگزینی local Offer storage با object storage production
-- [ ] Day 5: Promotion، eligibility و deterministic scoring
+- [x] Day 5: Promotion، eligibility و deterministic scoring
+- [ ] Day 6: package candidate generator، LLM selector، schema validation، retry/fallback و ai_logs
 - [ ] پاک‌سازی یا علامت‌گذاری رکوردهای تستی DB قبل از production
 
 دیتابیس توسعه ممکن است رکوردهای تستی با نام‌های codex/preview داشته باشد. credentials آن‌ها در این سند قرار نگرفته و نباید قرار بگیرد.
@@ -832,6 +909,11 @@ npx tsc --noEmit
 - migrationهای Day 4 `d4f0a9c21b73` و `e5b84a61c902`، حفظ داده‌های prototype و `alembic check` بدون drift
 - `python3 -m backend.tests.day4_smoke`: چهار reward type، validation، list/detail/edit، owner isolation، image upload/delete و status lifecycle
 - OpenAPI: تمام routeهای `/offers` تولید شدند
+- OpenAPI: پنج route جدید Promotion/Recommendation تولید شدند
+- migration Day 5 `f1c7b2d93a44` و `alembic check` بدون drift
+- `python3 -m backend.tests.day5_smoke`: eligibility، ranking 100/48، persistence، owner isolation، inventory و status rules
+- browser واقعی: login → Offer → Promote form → دو Recommendation ranked و بازبینی بصری RTL
+- console فعلی پس از reload بدون runtime error جدید؛ فقط warning توسعه‌ای pointerEvents از dependency وب
 - web export Day 4: 715 modules
 - mobile viewport `390x844`: login → business dashboard → create Offer → detail → edit
 - تست واقعی رفع IP قدیمی: browser پس از اصلاح به backend وصل شد و route `/business` را باز کرد
@@ -886,3 +968,10 @@ checkpoint. The immediate next task is stated in section 1 of the handoff file.
 - timeout ثبت‌نام روی گوشی ریشه‌یابی شد: frontend از IP قدیمی `192.168.1.5` استفاده می‌کرد، در حالی که IP مک `10.215.160.133` بود.
 - Base URL پیش‌فرض اصلاح و پشتیبانی از `EXPO_PUBLIC_API_URL` اضافه شد.
 - برنامهٔ اجرایی کامل و قابل تحویل Day 3 در `DAY_3_IMPLEMENTATION_PLAN.md` اضافه شد.
+
+### 2026-08-05
+
+- Day 4 به‌عنوان vertical slice کامل Offer ثبت شد.
+- Day 5 Promotion/Recommendation، موتور deterministic-v1 و UI نتایج کامل شد.
+- collision مسیر Offer Detail با nested `index.tsx` رفع شد.
+- migration، smoke test API/DB، TypeScript و مرورگر واقعی پاس شدند.

@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     publisher_currency: str = "IRR"
     upload_dir: str = "backend/uploads"
     max_offer_image_bytes: int = 10 * 1024 * 1024
+    promotion_candidate_limit: int = 50
+    promotion_cash_deal_cap: int = 50
+    promotion_min_value_ratio: float = 0.5
     model_config = SettingsConfigDict(
         env_file="backend/.env",
         env_file_encoding="utf-8",
