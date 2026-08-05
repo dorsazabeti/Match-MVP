@@ -77,6 +77,50 @@ export type ScoreFactor = {
   matched?: boolean | string[];
 };
 
+export type PackageDeliverable = {
+  media_plan_id: string;
+  platform_account_id: string;
+  platform: PromotionPlatform;
+  content_type: string;
+  quantity: number;
+  unit_price: string;
+  subtotal: string;
+  typical_views: number | null;
+};
+
+export type ExchangePackage = {
+  version: "exchange-package-v1";
+  candidate_id: string;
+  goal: PromotionGoal;
+  platform: PromotionPlatform;
+  deliverables: PackageDeliverable[];
+  total_items: number;
+  total_media_value: string;
+  currency: string;
+  reward: {
+    offer_id: string;
+    reward_type: string;
+    offer_units: number;
+    retail_value: string | null;
+    cash_amount: string | null;
+    total_reward_value: string;
+  };
+  value_ratio: string;
+  fair_value_band: {
+    lower: string;
+    upper: string;
+    widened: boolean;
+  };
+  selection: {
+    method: "LLM" | "DETERMINISTIC_FALLBACK";
+    reason: string;
+    confidence: number;
+    risk_flags: string[];
+    prompt_version: string;
+    model: string;
+  };
+};
+
 export type Recommendation = {
   id: string;
   promotion_id: string;
@@ -99,8 +143,15 @@ export type Recommendation = {
     location: ScoreFactor;
     platform: ScoreFactor;
     capability: ScoreFactor;
+    reliability?: {
+      available: boolean;
+      base_weight: number;
+      redistributed: boolean;
+    };
+    match_explanation?: string;
+    package_candidate_count?: number;
   };
-  package: Record<string, unknown> | null;
+  package: ExchangePackage | null;
   explanation: string;
   confidence: string;
   status: RecommendationStatus;

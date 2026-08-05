@@ -11,6 +11,7 @@ from backend.app.models.publisher_capability import PublisherCapability
 from backend.app.models.publisher_interest import PublisherInterest
 from backend.app.models.publisher_profile import PublisherProfile
 from backend.app.models.recommendation import Recommendation
+from backend.app.models.ai_log import AiLog
 
 
 @dataclass
@@ -34,6 +35,12 @@ def add_recommendations(
 ) -> None:
     db.add_all(recommendations)
     db.flush()
+
+
+def add_ai_log(db: Session, ai_log: AiLog) -> AiLog:
+    db.add(ai_log)
+    db.flush()
+    return ai_log
 
 
 def get_owned_promotion(
@@ -94,11 +101,27 @@ def list_promotion_recommendations(
     )
 
 
+def get_owned_recommendation(
+    db: Session,
+    business_id: UUID,
+    recommendation_id: UUID,
+) -> Recommendation | None:
+    return db.scalar(
+        select(Recommendation)
+        .join(Promotion, Promotion.id == Recommendation.promotion_id)
+        .where(
+            Recommendation.id == recommendation_id,
+            Promotion.business_id == business_id,
+        )
+    )
+
+
 def load_eligible_candidates(
     db: Session,
     *,
     preferred_platforms: list[str],
     target_city: str | None,
+    remotely_fulfillable: bool,
     currency: str,
 ) -> list[CandidateData]:
     statement = (
@@ -123,7 +146,7 @@ def load_eligible_candidates(
         statement = statement.where(
             PlatformAccount.platform.in_(preferred_platforms)
         )
-    if target_city:
+    if target_city and not remotely_fulfillable:
         statement = statement.where(
             func.lower(PublisherProfile.city) == target_city.casefold()
         )

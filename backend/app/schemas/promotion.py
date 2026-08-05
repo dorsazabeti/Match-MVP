@@ -6,6 +6,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from backend.app.schemas.publisher_onboarding import PlatformValue
+from backend.app.schemas.package import ExchangePackage
 
 
 class PromotionGoal(StrEnum):
@@ -116,7 +117,7 @@ class RecommendationResponse(BaseModel):
     best_media_plan: RecommendationMediaPlanResponse
     score: Decimal
     factors: dict
-    package: dict | None
+    package: ExchangePackage | None
     explanation: str
     confidence: Decimal
     status: RecommendationStatus

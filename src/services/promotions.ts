@@ -59,3 +59,13 @@ export function listRecommendations(
     headers: authHeaders(token),
   });
 }
+
+
+export function getRecommendation(
+  token: string,
+  recommendationId: string
+): Promise<Recommendation> {
+  return apiRequest(`/recommendations/${recommendationId}`, {
+    headers: authHeaders(token),
+  });
+}

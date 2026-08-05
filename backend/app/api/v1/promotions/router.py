@@ -11,11 +11,13 @@ from backend.app.schemas.promotion import (
     PromotionOptionsResponse,
     PromotionResponse,
     RecommendationListResponse,
+    RecommendationResponse,
 )
 from backend.app.services.promotion_service import (
     create_promotion_and_recommendations,
     get_promotion_options,
     get_promotion_response,
+    get_recommendation_response,
     list_promotions,
     list_recommendations,
 )
@@ -96,5 +98,20 @@ def get_recommendations(
 ):
     try:
         return list_recommendations(db, current_user, promotion_id)
+    except (PermissionError, LookupError, ValueError) as error:
+        _raise_domain_error(error)
+
+
+@router.get(
+    "/recommendations/{recommendation_id}",
+    response_model=RecommendationResponse,
+)
+def get_recommendation(
+    recommendation_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    try:
+        return get_recommendation_response(db, current_user, recommendation_id)
     except (PermissionError, LookupError, ValueError) as error:
         _raise_domain_error(error)

@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -24,6 +25,20 @@ class Settings(BaseSettings):
     promotion_candidate_limit: int = 50
     promotion_cash_deal_cap: int = 50
     promotion_min_value_ratio: float = 0.5
+    package_fair_value_min: float = 0.75
+    package_fair_value_max: float = 1.35
+    package_wide_value_min: float = 0.60
+    package_wide_value_max: float = 1.60
+    package_max_candidates: int = 5
+    package_max_distinct_types: int = 3
+    package_max_total_items: int = 6
+    llm_selection_enabled: bool = False
+    openai_api_key: SecretStr | None = None
+    openai_model: str = "gpt-5.6-terra"
+    openai_reasoning_effort: str = "low"
+    openai_timeout_seconds: float = 6.0
+    openai_max_concurrency: int = 8
+    ai_prompt_version: str = "package-selector-v1"
     model_config = SettingsConfigDict(
         env_file="backend/.env",
         env_file_encoding="utf-8",

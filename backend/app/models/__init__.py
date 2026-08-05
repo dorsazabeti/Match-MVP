@@ -10,6 +10,7 @@ from backend.app.models.offer import Offer
 from backend.app.models.offer_image import OfferImage
 from backend.app.models.promotion import Promotion
 from backend.app.models.recommendation import Recommendation
+from backend.app.models.ai_log import AiLog
 
 
 __all__ = [
@@ -25,4 +26,5 @@ __all__ = [
     "OfferImage",
     "Promotion",
     "Recommendation",
+    "AiLog",
 ]

@@ -154,7 +154,7 @@ def offer_payload(category_id: str) -> dict:
         "units_per_deal": 2,
         "available_quantity": 10,
         "fulfillment_notes": "ارسال رایگان به ناشر منتخب",
-        "remotely_fulfillable": True,
+        "remotely_fulfillable": False,
         "expires_at": None,
     }
 
@@ -223,21 +223,21 @@ def main() -> None:
         expected_status=201,
     )
     assert promotion["status"] == "READY"
-    assert promotion["recommendation_count"] == 2
+    assert promotion["recommendation_count"] == 1
 
     recommendations = request(
         "GET",
         f"/api/v1/promotions/{promotion['id']}/recommendations",
         token=business_token,
     )
-    assert recommendations["total"] == 2
-    first, second = recommendations["items"]
-    assert float(first["score"]) > float(second["score"])
-    assert first["score"] == "100.00"
-    assert first["factors"]["algorithm_version"] == "deterministic-v1"
+    assert recommendations["total"] == 1
+    first = recommendations["items"][0]
+    assert float(first["score"]) > 90
+    assert first["factors"]["algorithm_version"] == "deterministic-v2"
     assert first["factors"]["interest"]["matched"] is True
     assert first["best_media_plan"]["platform"] == "INSTAGRAM"
-    assert first["package"] is None
+    assert first["package"]["version"] == "exchange-package-v1"
+    assert first["package"]["selection"]["method"] == "DETERMINISTIC_FALLBACK"
 
     listing = request(
         "GET",

@@ -8,7 +8,7 @@
 **Repository:** `/Users/dorsazabeti/match-mvp`  
 **Branch:** `main`  
 **PRD اصلی:** `/Users/dorsazabeti/Downloads/Match MVP Product Requirements Document.pdf`  
-**وضعیت کلی:** Day 1 تا Day 5 در کد، دیتابیس و تست‌های یکپارچه کامل‌اند. Day 5 شامل Promotion، eligibility، deterministic scoring قابل توضیح، ذخیره Recommendation، فرم mobile-first Promote و صفحه نتایج رتبه‌بندی است. migration تا `f1c7b2d93a44` اعمال شده، TypeScript و تست واقعی API/DB/browser پاس شده‌اند. فقط smoke test نهایی native روی Expo Go برای Day 4/5 و push checkpointهای محلی باقی مانده است.
+**وضعیت کلی:** Day 1 تا Day 6 در کد، دیتابیس و تست‌های یکپارچه کامل‌اند. Day 6 شامل ساخت قطعی candidateهای بسته همکاری، رتبه‌بندی قابل توضیح، انتخاب محدود و schema-validated توسط مدل، retry یک‌باره، fallback قطعی، AI log بدون داده خصوصی و UI کامل بسته است. migration تا `ab92e517cd30` اعمال شده و TypeScript، Python، Alembic، web export، تست‌های API/DB و مرورگر mobile-width پاس شده‌اند. تماس زنده با OpenAI عمداً بدون API key انجام نشده و feature flag پیش‌فرض خاموش است؛ مسیر fallback کاملاً عملیاتی است. smoke test نهایی native روی Expo Go برای Day 4 تا 6 و push checkpointهای محلی باقی مانده است.
 
 ---
 
@@ -31,9 +31,9 @@ npx tsc --noEmit
 ### اقدام بعدی دقیق
 
 1. `git status` را بخوان و مطمئن شو `match-mvp.zip` وارد stage نمی‌شود.
-2. Day 4 و Day 5 را روی Expo Go گوشی واقعی smoke test کن: login، dashboard، Offer detail، Promote، انتخاب معیارها و Recommendations.
+2. Day 4 تا Day 6 را روی Expo Go گوشی واقعی smoke test کن: login، dashboard، Offer detail، Promote، Recommendations، فیلتر نتایج و جزئیات بسته.
 3. اگر تست گوشی پاس شد، checkpointهای محلی را push کن.
-4. Day 6 را طبق PRD از collaboration package candidateها، LLM selector با خروجی schema-validated و fallback قطعی آغاز کن؛ `package_json` در Recommendation عمداً تا آن روز nullable است.
+4. Day 7 را طبق PRD با Invitation، expiry، Adjust محدود و state machine شروع کن؛ قبل از هر reservation منطق idempotency و transaction boundary را دقیق طراحی کن.
 
 ---
 
@@ -120,9 +120,13 @@ Offer
 
 ## 5. وضعیت Git در زمان آخرین به‌روزرسانی
 
-پیش از ثبت checkpoint Day 5، branch محلی `main` یک commit از `origin/main` جلوتر بود:
+پس از ثبت checkpoint Day 6، branch محلی `main` سه commit از `origin/main` جلوتر است:
 
-نام checkpoint: `complete Day 4 Offer vertical slice`.
+```text
+HEAD     complete Day 6 exchange package generation
+a94a1c8 complete Day 5 promotion matching
+078891e complete Day 4 Offer vertical slice
+```
 
 ### commitهای موجود
 
@@ -143,7 +147,7 @@ ff3c38c has some bugs
 
 ### تغییرات فعلی commit‌نشده
 
-کد Day 4 commit شده است و تغییرات Day 5 برای checkpoint آماده‌اند. تنها artifact خارج از پروژه `match-mvp.zip` است؛ متعلق به کاربر است و حذف، ویرایش یا stage نشود. دو revision اولیه Offer (`062...` و `749...`) روی DB اجرا شده‌اند و حذف نشوند.
+Day 6 در checkpoint با پیام `complete Day 6 exchange package generation` ثبت شده است. تنها artifact خارج از پروژه `match-mvp.zip` است؛ متعلق به کاربر است و حذف، ویرایش یا stage نشود. دو revision اولیه Offer (`062...` و `749...`) روی DB اجرا شده‌اند و حذف نشوند.
 
 پیش از commit وضعیت Git دوباره بررسی شود، چون ممکن است صاحب پروژه هم‌زمان commit یا push انجام داده باشد.
 
@@ -264,6 +268,32 @@ ff3c38c has some bugs
 - [x] TypeScript check و بررسی بصری RTL/mobile-first
 - [ ] smoke test همین جریان روی Expo Go گوشی فیزیکی
 
+### Day 6 — Exchange Package Generator و AI Selector — انجام شده
+
+- [x] هم‌راستا کردن eligibility با PRD: علاقه دقیق، media plan تا حداکثر ۲ برابر پاداش و پشتیبانی صحیح از remote fulfillment
+- [x] scoring قطعی `deterministic-v2`: interest 35، value 30، platform 15، capability 10، location 5
+- [x] توزیع وزن ۵ امتیازی reliability بین عوامل موجود تا زمان ساخته‌شدن تاریخچه همکاری
+- [x] ساخت candidateهای bounded روی یک platform، حداکثر ۳ نوع deliverable و ۶ آیتم کل
+- [x] quantity هر deliverable بین ۱ تا ۴ و حداکثر ۵ candidate برای selector
+- [x] fair-value band عادی `0.75–1.35` و یک widen کنترل‌شده `0.60–1.60` با confidence کمتر
+- [x] رتبه‌بندی deterministic براساس نزدیکی ارزش، goal، سادگی و capability
+- [x] adapter واقعی OpenAI Responses API با Structured Outputs؛ مدل فقط `candidate_id` و metadata انتخاب را برمی‌گرداند
+- [x] validation سخت Pydantic با `extra=forbid` و جلوگیری از ساخت deliverable آزاد توسط مدل
+- [x] فقط یک retry برای invalid JSON یا timeout و fallback قطعی به بهترین candidate
+- [x] feature flag پیش‌فرض خاموش و تنظیمات server-side برای API key/model/timeout/concurrency
+- [x] مدل و migration جدول `ai_logs` با prompt version، request hash، latency، token usage، result و fallback status
+- [x] عدم ارسال ایمیل، تلفن و داده مالی ناشر به مدل یا response جزئیات
+- [x] snapshot کامل `package_json` و اتصال `ai_log_id` به Recommendation
+- [x] endpoint owner-scoped جزئیات Recommendation و جلوگیری از دسترسی Business دیگر
+- [x] فیلتر platform و score در صفحه نتایج و نمایش خلاصه بسته روی هر کارت
+- [x] صفحه mobile-first جزئیات ناشر، منطق score، factorها، privacy note و breakdown کامل بسته
+- [x] اصلاح overflow نام/شهر/handle بلند در عرض ۳۹۰ پیکسل
+- [x] smoke test retry موفق، timeout fallback، package constraints، AI log و owner isolation
+- [x] regression تست‌های Day 3 تا Day 6، TypeScript، Python compile، Alembic check و production web export
+- [x] تست مرورگر login → results → recommendation detail در viewport موبایل بدون console error
+- [ ] تماس زنده با OpenAI پس از قرار دادن API key معتبر و فعال‌کردن feature flag در محیط backend
+- [ ] smoke test همین جریان روی Expo Go گوشی فیزیکی
+
 ---
 
 ## 7. جریان فعلی کاربر
@@ -293,11 +323,13 @@ Login
 
 Resume routing برای هر دو نقش پیاده‌سازی شده است. `app/index.tsx` وجود ندارد؛ route `/` همان `app/(auth)/index.tsx` است و session ذخیره‌شده از آنجا به مسیر صحیح منتقل می‌شود.
 
-جریان فعلی Day 5 برای Business:
+جریان فعلی Day 6 برای Business:
 
 ```text
 Active Offer → Promote Form → deterministic eligibility/scoring
-→ persisted Promotion + Recommendations → ranked result cards
+→ bounded package candidates → schema-validated selector یا deterministic fallback
+→ persisted AI log + Recommendation package snapshot
+→ ranked result cards → owner-scoped package detail
 ```
 
 ---
@@ -381,9 +413,25 @@ POST /api/v1/offers/{offer_id}/promotions
 GET  /api/v1/promotions?offer_id={offer_id}
 GET  /api/v1/promotions/{promotion_id}
 GET  /api/v1/promotions/{promotion_id}/recommendations
+GET  /api/v1/recommendations/{recommendation_id}
 ```
 
-ساخت Promotion در Day 5 synchronous و transaction-safe است: رکورد با GENERATING ساخته، candidateها یک‌باره query و با داده‌های batch enrich، Recommendationها ذخیره و Promotion برابر READY می‌شود. `package_json` و `ai_log_id` برای Day 6 عمداً nullable هستند؛ AI نمایشی یا explanation ساختگی وجود ندارد.
+ساخت Promotion synchronous و transaction-safe باقی مانده است: رکورد با GENERATING ساخته، candidateها یک‌باره query و با داده‌های batch enrich می‌شوند؛ سپس package selectionهای مستقل با concurrency محدود اجرا، AI log و Recommendationها در thread اصلی DB ذخیره و Promotion برابر READY می‌شود. `package_json` و `ai_log_id` برای رکوردهای legacy nullable می‌مانند، اما Recommendationهای جدید فقط وقتی ساخته می‌شوند که حداقل یک package معتبر وجود داشته باشد.
+
+### تنظیمات Day 6 AI
+
+مقادیر نمونه در `.env.example` ثبت شده‌اند. secret فقط باید در `.env` محلی یا secret manager محیط deployment قرار گیرد:
+
+```text
+LLM_SELECTION_ENABLED=false
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-5.6-terra
+OPENAI_REASONING_EFFORT=low
+OPENAI_TIMEOUT_SECONDS=6
+OPENAI_MAX_CONCURRENCY=8
+```
+
+در حالت پیش‌فرض هیچ تماس خارجی انجام نمی‌شود و selector قطعی بهترین candidate را انتخاب می‌کند. برای تست live ابتدا API key سمت سرور تنظیم و سپس flag فعال شود. درخواست مدل شامل شناسه‌های candidate، مقدارها، goal و capability عمومی است و contact/wallet data در آن وجود ندارد.
 
 Publisher فعلی این موارد را در JSON نگه می‌دارد:
 
@@ -409,15 +457,16 @@ c4d3e7f9a021  add publisher onboarding entities
 d4f0a9c21b73  complete PRD Offer inventory and offer_images schema
 e5b84a61c902  align Offer status column length with SQLAlchemy model
 f1c7b2d93a44  add promotions and persisted recommendations
+ab92e517cd30  add AI logs and recommendation-to-log reference
 ```
 
 آخرین وضعیت تأییدشدهٔ دیتابیس local:
 
 ```text
-f1c7b2d93a44 (head)
+ab92e517cd30 (head)
 ```
 
-این revision روی PostgreSQL توسعه اعمال شده است و `alembic check` drift ندارد. تست‌های Day 4 و Day 5 رکوردهای disposable و واضح ایجاد کرده‌اند.
+این revision روی PostgreSQL توسعه اعمال شده است و `alembic check` drift ندارد. تست‌های Day 4 تا Day 6 رکوردهای disposable و واضح ایجاد کرده‌اند.
 
 برای بررسی:
 
@@ -505,7 +554,11 @@ Offer Detail با تصویر، reward/value/inventory، fulfillment، status act
 
 #### `app/business/promotion/[id]/recommendations.tsx`
 
-صفحه ranked recommendationها با empty/loading/error state، score ring، تعرفه، reach، explanation و breakdown پنج عامل.
+صفحه ranked recommendationها با empty/loading/error state، فیلتر platform و حداقل score، score ring، تعرفه، reach، explanation، breakdown پنج عامل و خلاصه بسته Day 6.
+
+#### `app/business/recommendation/[id].tsx`
+
+صفحه owner-scoped جزئیات Recommendation با اطلاعات عمومی و امن ناشر، منطق score، factor barها، platformها، بسته کامل تبادل ارزش و placeholder صادقانه Day 7. متن‌های بلند در mobile viewport truncate می‌شوند.
 
 ### Frontend services — `src/services/`
 
@@ -519,11 +572,15 @@ wrapper مرکزی `fetch` با timeout پانزده‌ثانیه، `ApiError` �
 
 #### `src/services/promotions.ts` و `src/types/promotions.ts`
 
-قرارداد typed Promotion/Recommendation و درخواست‌های options/create/list/detail/results.
+قرارداد typed Promotion/Recommendation/ExchangePackage و درخواست‌های options/create/list/detail/results/recommendation detail.
 
 #### `src/features/promotions/PromotionForm.tsx`
 
 فرم مستقل mobile-first Day 5 با validation سمت client، سقف محاسبه‌شده موجودی و انتخاب هدف/شهر/پلتفرم/زمان‌بندی/brief.
+
+#### `src/features/promotions/PackageBreakdown.tsx`
+
+کامپوننت reusable نمایش package در دو حالت compact و full: deliverableها، quantity، platform، subtotal، total value، reward value، value ratio، selection method، reason و هشدار widened band.
 
 #### `src/features/offers/OfferForm.tsx`
 
@@ -574,7 +631,7 @@ Zustand auth store. موارد اصلی:
 
 #### `backend/app/core/config.py`
 
-خواندن تنظیمات environment مانند database و JWT. اطلاعات محرمانه نباید hardcode شوند.
+خواندن تنظیمات environment مانند database، JWT، fair-value bands، سقف candidate/concurrency و OpenAI feature flag/model/timeout. اطلاعات محرمانه نباید hardcode شوند.
 
 #### `backend/app/core/database.py`
 
@@ -624,7 +681,7 @@ endpointهای ساخت/دریافت Business و Publisher profile.
 
 #### `backend/app/api/v1/promotions/router.py`
 
-قرارداد HTTP Day 5 برای options، create، list، detail و recommendationها؛ تمام routeهای خصوصی business owner-scoped هستند.
+قرارداد HTTP Promotion برای options، create، list، detail، recommendation list و Recommendation detail؛ تمام routeهای خصوصی business owner-scoped هستند.
 
 ### Backend models — `backend/app/models/`
 
@@ -652,6 +709,10 @@ export/import مدل‌ها برای ثبت درست metadata و Alembic. هنگ
 
 Promotion وابسته به Business/Offer و Recommendation یکتای promotion+publisher با score/factors/package/explanation/confidence؛ قوانین range و status در DB constraint نیز enforce شده‌اند.
 
+#### `backend/app/models/ai_log.py`
+
+audit metadata انتخاب بسته شامل purpose، prompt version، model، request hash، latency، token usage، success/fallback/error و result کوچک است. prompt خام یا اطلاعات تماس خصوصی ذخیره نمی‌شود.
+
 ### Backend schemas — `backend/app/schemas/`
 
 #### `backend/app/schemas/auth.py`
@@ -676,7 +737,11 @@ enumها و قرارداد create/update/response/options با validation ترک
 
 #### `backend/app/schemas/promotion.py`
 
-enumها و قراردادهای validated Promotion، options و Recommendation response. platformها unique و زمان‌ها و desired deals محدود هستند.
+enumها و قراردادهای validated Promotion، options و Recommendation response. `package` اکنون `ExchangePackage` تایپ‌شده است؛ platformها unique و زمان‌ها و desired deals محدود هستند.
+
+#### `backend/app/schemas/package.py`
+
+قرارداد سخت exchange package، candidate و خروجی selector با منع فیلد اضافه، محدودیت quantity/type/total items و انتخاب candidate ID.
 
 ### Backend repositories — `backend/app/repositories/`
 
@@ -694,7 +759,7 @@ queryهای owner-scoped، eager loading تصویر، auto-expiry persistence و
 
 #### `backend/app/repositories/promotion_repository.py`
 
-queryهای owner-scoped Promotion و candidate query کارآمد؛ account/media plan را join و interest/capability را در دو batch query می‌گیرد تا N+1 ایجاد نشود.
+queryهای owner-scoped Promotion/Recommendation، persistence `AiLog` و candidate query کارآمد؛ account/media plan را join و interest/capability را در دو batch query می‌گیرد تا N+1 ایجاد نشود.
 
 ### Backend services — `backend/app/services/`
 
@@ -712,7 +777,15 @@ queryهای owner-scoped Promotion و candidate query کارآمد؛ account/med
 
 #### `backend/app/services/promotion_service.py`
 
-قوانین promotable بودن Offer، hard eligibility، الگوریتم deterministic-v1، snapshot عوامل، explanation، persistence transaction و serialization نتیجه.
+قوانین promotable بودن Offer، hard eligibility، الگوریتم deterministic-v2، snapshot عوامل، package orchestration با concurrency محدود، persistence transaction و serialization نتیجه.
+
+#### `backend/app/services/package_candidate_service.py`
+
+تولید و rank کردن deterministic candidateهای bounded طبق fair-value band، هدف کمپین، سادگی و capability؛ بیش از پنج candidate از این مرز عبور نمی‌کند.
+
+#### `backend/app/services/llm_package_selector.py`
+
+adapter OpenAI Responses API و کنترل retry/timeout/strict JSON/fallback. مدل اجازه ساخت بسته ندارد و فقط از candidate IDهای مجاز انتخاب می‌کند.
 
 #### `backend/app/services/storage_service.py`
 
@@ -720,7 +793,7 @@ storage adapter کوچک development برای Offer image. مسیر root configu
 
 ### Alembic — `backend/migrations/versions/`
 
-هر فایل یک تغییر schema قابل ردیابی است. `f1c7b2d93a44_add_promotions_and_recommendations.py` head فعلی و روی DB اعمال‌شده است. revisionهای `062...` و `749...` حذف یا squash نشوند چون DB فعلی آن‌ها را در history دارد.
+هر فایل یک تغییر schema قابل ردیابی است. `ab92e517cd30_add_ai_logs.py` head فعلی و روی DB اعمال‌شده است. revisionهای `062...` و `749...` حذف یا squash نشوند چون DB فعلی آن‌ها را در history دارد.
 
 ---
 
@@ -828,7 +901,7 @@ JSONهای Day 2 فعلاً برای backward compatibility حفظ شوند؛ د
 - [x] امکان تنظیم Base URL با `EXPO_PUBLIC_API_URL`
 - [x] حذف hardcode IP وابسته به LAN در development
 - [ ] اتصال health router
-- [x] smoke test خودکار Day 3 و Day 4 (script-based)
+- [x] smoke test خودکار Day 3 تا Day 6 (script-based)
 - [ ] تبدیل suite به pytest و اجرای CI
 - [ ] تست خودکار frontend
 - [ ] پشتیبانی احتمالی یک User از هر دو role طبق PRD
@@ -836,7 +909,8 @@ JSONهای Day 2 فعلاً برای backward compatibility حفظ شوند؛ د
 - [x] dashboard/home کسب‌وکار پس از کامل شدن onboarding
 - [ ] جایگزینی local Offer storage با object storage production
 - [x] Day 5: Promotion، eligibility و deterministic scoring
-- [ ] Day 6: package candidate generator، LLM selector، schema validation، retry/fallback و ai_logs
+- [x] Day 6: package candidate generator، LLM selector، schema validation، retry/fallback و ai_logs
+- [ ] Day 7: Invitation، expiry، Adjust محدود و state machine دعوت
 - [ ] پاک‌سازی یا علامت‌گذاری رکوردهای تستی DB قبل از production
 
 دیتابیس توسعه ممکن است رکوردهای تستی با نام‌های codex/preview داشته باشد. credentials آن‌ها در این سند قرار نگرفته و نباید قرار بگیرد.
@@ -909,13 +983,17 @@ npx tsc --noEmit
 - migrationهای Day 4 `d4f0a9c21b73` و `e5b84a61c902`، حفظ داده‌های prototype و `alembic check` بدون drift
 - `python3 -m backend.tests.day4_smoke`: چهار reward type، validation، list/detail/edit، owner isolation، image upload/delete و status lifecycle
 - OpenAPI: تمام routeهای `/offers` تولید شدند
-- OpenAPI: پنج route جدید Promotion/Recommendation تولید شدند
+- OpenAPI: routeهای Promotion و Recommendation detail تولید شدند
 - migration Day 5 `f1c7b2d93a44` و `alembic check` بدون drift
-- `python3 -m backend.tests.day5_smoke`: eligibility، ranking 100/48، persistence، owner isolation، inventory و status rules
-- browser واقعی: login → Offer → Promote form → دو Recommendation ranked و بازبینی بصری RTL
-- console فعلی پس از reload بدون runtime error جدید؛ فقط warning توسعه‌ای pointerEvents از dependency وب
-- web export Day 4: 715 modules
+- `python3 -m backend.tests.day5_smoke`: eligibility دقیق، deterministic-v2، persistence، owner isolation، inventory و status rules
+- migration Day 6 `ab92e517cd30` و `alembic check`: بدون drift
+- `python3 -m backend.tests.day6_smoke`: package constraints، fair-value، AI log، owner isolation، invalid-output retry و timeout fallback
+- regression نهایی: `python3 -m backend.tests.day3_smoke` تا `day6_smoke` همگی pass
+- browser واقعی: login → Recommendation results → package detail و بازبینی بصری RTL
+- console صفحه results و detail پس از reload بدون runtime error
+- web export Day 6: 721 modules
 - mobile viewport `390x844`: login → business dashboard → create Offer → detail → edit
+- mobile viewport `390x844`: Recommendation detail، package breakdown و اصلاح overflow داده‌های بلند
 - تست واقعی رفع IP قدیمی: browser پس از اصلاح به backend وصل شد و route `/business` را باز کرد
 
 هر تست باید پس از تغییر بخش مربوطه دوباره اجرا شود؛ این لیست تضمین نمی‌کند سرورهای فعلی هنوز روشن‌اند.
@@ -957,6 +1035,14 @@ checkpoint. The immediate next task is stated in section 1 of the handoff file.
 ---
 
 ## 17. Change Log این سند
+
+### 2026-08-05 — Day 6
+
+- الگوریتم deterministic-v2 و generator بسته‌های bounded ثبت شد.
+- قرارداد LLM selector، retry یک‌باره، fallback و تنظیمات feature flag مستند شد.
+- AI log، migration head جدید، API جزئیات و فایل‌های UI Day 6 به راهنمای فایل‌ها اضافه شد.
+- نتیجه regression Day 3 تا Day 6، web export و تست واقعی mobile-width ثبت شد.
+- اقدام بعدی به Day 7 Invitation/Adjust تغییر کرد.
 
 ### 2026-08-03
 
