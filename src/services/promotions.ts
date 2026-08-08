@@ -69,3 +69,19 @@ export function getRecommendation(
     headers: authHeaders(token),
   });
 }
+export function invitePublisher(
+  token: string,
+  recommendationId: string,
+  message?: string
+) {
+  return apiRequest(`/recommendations/${recommendationId}/invite`, {
+    method: "POST",
+    headers: {
+      ...authHeaders(token),
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      message,
+    }),
+  });
+}

@@ -11,7 +11,7 @@ from backend.app.models.offer_image import OfferImage
 from backend.app.models.promotion import Promotion
 from backend.app.models.recommendation import Recommendation
 from backend.app.models.ai_log import AiLog
-
+from backend.app.models.invitation import Invitation
 
 __all__ = [
     "User",

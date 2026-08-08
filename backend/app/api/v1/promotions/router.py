@@ -1,8 +1,11 @@
 from uuid import UUID
+from backend.app.models.recommendation import Recommendation
+from backend.app.schemas.invitation import InvitationCreate
+from backend.app.services.business_service import require_business
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
-
+from backend.app.services.invitation_service import create_invitation
 from backend.app.core.dependencies import get_current_user, get_db
 from backend.app.models.user import User
 from backend.app.schemas.promotion import (
@@ -24,7 +27,43 @@ from backend.app.services.promotion_service import (
 
 
 router = APIRouter(tags=["Promotions"])
+@router.post(
+    "/recommendations/{recommendation_id}/invite",
+)
+def invite_publisher(
+    recommendation_id:UUID,
+    request:InvitationCreate,
+    db:Session=Depends(get_db),
+    current_user:User=Depends(get_current_user)
+):
 
+    business = require_business(
+        db,
+        current_user
+    )
+
+    recommendation = (
+        db.query(Recommendation)
+        .filter(
+            Recommendation.id==recommendation_id
+        )
+        .first()
+    )
+
+
+    if not recommendation:
+        raise HTTPException(
+            404,
+            "Recommendation not found"
+        )
+
+
+    return create_invitation(
+        db,
+        business,
+        recommendation,
+        request.message
+    )
 
 def _raise_domain_error(error: Exception) -> None:
     if isinstance(error, PermissionError):

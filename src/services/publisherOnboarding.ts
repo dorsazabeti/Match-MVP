@@ -28,7 +28,7 @@ export function getPublisherOnboardingRoute(
     PLATFORM_ACCOUNTS: "/publisher-platforms",
     MEDIA_PLANS: "/publisher-media-plans",
     PREFERENCES: "/publisher-preferences",
-    COMPLETE: "/publisher-complete",
+    COMPLETE: "/publisher",
   } as const;
 
   return routes[step];
